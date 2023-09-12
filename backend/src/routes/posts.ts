@@ -17,7 +17,7 @@ export async function postsRoutes(app: FastifyInstance) {
         avisos: post.avisos,
         isPublic: post.isPublic,
         usuario: post.userId,
-        excerpt: post.descricao.substring(0, 115).concat('...'),
+        excerpt: post.descricao.substring(0, 115).concat('...'), 
       }
     }))
   })

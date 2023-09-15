@@ -12,6 +12,7 @@ export async function postsRoutes(app: FastifyInstance) {
     return (posts.map((post) => {
       return {
         id: post.id,
+        nomePet: post.nomePet,
         imagens: post.imagens,
         filtros: post.filtros,
         localizacoes: post.localizacao,
@@ -25,6 +26,7 @@ export async function postsRoutes(app: FastifyInstance) {
 
   app.post('/createPost', async (request) => {
     const bodySchema = z.object({
+      nomePet: z.string(),
       descricao: z.string(),
       imagens: z.string().array(),
       isPublic: z.coerce.boolean().default(false),
@@ -37,6 +39,7 @@ export async function postsRoutes(app: FastifyInstance) {
     // Cria um novo post seguindo o esquema dado
     const post = await prisma.post.create({
       data: {
+        nomePet: postData.nomePet,
         descricao: postData.descricao,
         imagens: postData.imagens,
         isPublic: postData.isPublic,

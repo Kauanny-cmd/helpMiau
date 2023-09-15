@@ -24,6 +24,7 @@ model Usuario {
 model Post {
   id          String   @id @default(uuid())
   imagens     String[]
+  nomePet     String
   descricao   String
   filtros     String[]
   localizacao String[]

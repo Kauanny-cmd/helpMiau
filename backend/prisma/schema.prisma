@@ -37,6 +37,7 @@ model Post {
 
 model Topico {
   id          String   @id @default(uuid())
+  titulo      String
   descricao   String
   comentarios String[]
   isPublic    Boolean  @default(false)

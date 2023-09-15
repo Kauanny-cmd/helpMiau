@@ -1,11 +1,13 @@
 import fastify from 'fastify';
 import { authRoutes } from './routes/auth';
 import { postsRoutes } from './routes/posts';
+import { topicsRoutes } from './routes/topic';
 
 const app = fastify({ logger: true });
 // Definição de rotas
 app.register(authRoutes);
 app.register(postsRoutes);
+app.register(topicsRoutes);
 
 // Inicialização do servidor
 app

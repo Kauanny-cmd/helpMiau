@@ -53,45 +53,6 @@ export async function topicsRoutes(app: FastifyInstance) {
     return topico
   })
 
-  app.post('/commentTopico/:id', async (request, reply) => {
-    try {
-      const bodySchema = z.object({
-        descricao: z.string(),
-        userId: z.string(),
-        topicoId: z.string(),
-      })
-
-      const topicoCommentData = bodySchema.parse(request.body)
-
-      // Verificando se o tópico existe
-      const topic = await prisma.topico.findUnique({
-        where: {
-          id: topicoCommentData.topicoId,
-        }
-      })
-
-      if (!topic) {
-        reply.code(404).send({ error: 'Tópico não existe!' })
-        return
-      }
-
-      // Criando comentário
-      const commetTopic = await prisma.comentarioTopico.create({
-        data: {
-          descricao: topicoCommentData.descricao,
-          userId: topicoCommentData.userId,
-          topicoId: topicoCommentData.topicoId
-        }
-      })
-
-      reply.send({ message: 'Comentário adicionado com sucesso.', commetTopic });
-      return commetTopic
-    } catch (e) {
-      console.log(e)
-      reply.code(500).send({ error: 'Erro ao comentar no tópico.' });
-    }
-  })
-
   app.delete('/deleteTopic/:id', async (request, reply) => {
     try {
       const bodySchema = z.object({

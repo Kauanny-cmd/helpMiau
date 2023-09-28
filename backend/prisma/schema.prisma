@@ -11,39 +11,67 @@ datasource db {
 }
 
 model Usuario {
-  id        String   @id @default(uuid())
-  nome      String
-  login     String
-  avatarUrl String
-  posts     Post[]
-  topicos   Topico[]
-  telefone  String
-  pets      String[]
+  id                String             @id @default(uuid())
+  nome              String
+  login             String
+  avatarUrl         String
+  telefone          String
+  pets              String[]
+  // Relações
+  posts             Post[]
+  topicos           Topico[]
+  comentariosPost   ComentarioPost[]
+  comentariosTopico ComentarioTopico[]
 }
 
 model Post {
-  id          String   @id @default(uuid())
+  id          String           @id @default(uuid())
   imagens     String[]
   nomePet     String
   descricao   String
   filtros     String[]
   localizacao String[]
   avisos      String[]
-  isPublic    Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  isPublic    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  // Relações
+  user        Usuario          @relation(fields: [userId], references: [id])
+  userId      String
+  comentarios ComentarioPost[]
+}
 
-  user   Usuario @relation(fields: [userId], references: [id])
-  userId String
+model ComentarioPost {
+  id        String   @id @default(uuid())
+  descricao String
+  createdAt DateTime @default(now())
+  // Relações
+  user      Usuario  @relation(fields: [userId], references: [id])
+  userId    String
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String
 }
 
 model Topico {
   id          String   @id @default(uuid())
   titulo      String
   descricao   String
-  comentarios String[]
   isPublic    Boolean  @default(false)
   createdAt   DateTime @default(now())
 
-  user   Usuario @relation(fields: [userId], references: [id])
-  userId String
+  user        Usuario            @relation(fields: [userId], references: [id])
+  userId      String
+  comentarios ComentarioTopico[]
+}
+
+model ComentarioTopico {
+  id        String   @id @default(uuid())
+  descricao String
+  createdAt DateTime @default(now())
+  // Relações
+  user      Usuario  @relation(fields: [userId], references: [id])
+  userId    String
+
+  topico   Topico @relation(fields: [topicoId], references: [id])
+  topicoId String
 }

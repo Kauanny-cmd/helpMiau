@@ -7,15 +7,28 @@ export async function topicsRoutes(app: FastifyInstance) {
     const topics = await prisma.topico.findMany({
       orderBy:{
         createdAt: 'asc'
+      },
+      include:{
+        comentarios:{
+          orderBy:{
+            createdAt: 'asc'
+          }
+        }
       }
     })
     return (topics.map((topic) => {
       return {
         id: topic.id,
-        comentarios: topic.comentarios,
         isPublic: topic.isPublic,
         usuario: topic.userId,
-        excerpt: topic.descricao.substring(0, 115).concat('...'), 
+        excerpt: topic.descricao.substring(0, 115).concat('...'),
+        comentarios: topic.comentarios.map((comment) => {
+          return {
+            id: comment.id,
+            descricao: comment.descricao,
+            userId: comment.userId,
+          };
+        }),
       }
     }))
   })

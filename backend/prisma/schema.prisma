@@ -13,7 +13,7 @@ datasource db {
 model Usuario {
   id                String             @id @default(uuid())
   nome              String
-  login             String
+  login             String             @unique
   avatarUrl         String
   telefone          String
   pets              String[]
@@ -53,11 +53,11 @@ model ComentarioPost {
 }
 
 model Topico {
-  id          String   @id @default(uuid())
-  titulo      String
-  descricao   String
-  isPublic    Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  titulo    String
+  descricao String
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   user        Usuario            @relation(fields: [userId], references: [id])
   userId      String

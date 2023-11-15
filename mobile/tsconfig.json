@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@supabase/ui": ["node_modules/@supabase/ui"]
+    },
     "types": [
       "node"
     ]

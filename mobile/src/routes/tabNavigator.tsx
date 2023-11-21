@@ -4,6 +4,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../global/style';
 
 import Home from '../screens/Home';
+import Post from '../screens/Post';
+import Forum from '../screens/Forum';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,7 +22,7 @@ const TabNavigation = () => {
               : 'paw-outline';
           } else if (route.name === 'Post') {
             iconName = focused ? 'add-circle-sharp' : 'add-circle-outline';
-          } else if (route.name === 'Chat') {
+          } else if (route.name === 'Forum') {
             iconName = focused ? 'chatbubbles-sharp' : 'chatbubbles-outline';
           }
 
@@ -30,7 +32,18 @@ const TabNavigation = () => {
         tabBarInactiveTintColor: `${Colors.primaryColor}`,
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Home" component={Home} options={{
+          headerTitle: '',
+          headerTransparent: true,
+        }}/>
+      <Tab.Screen name="Post" component={Post} options={{
+          headerTitle: '',
+          headerTransparent: true,
+        }}/>
+      <Tab.Screen name="Forum" component={Forum} options={{
+          headerTitle: '',
+          headerTransparent: true,
+        }}/>
     </Tab.Navigator>
   );
 }

@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "16"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node build/server.js",
+    "build": "tsup src",
+    "start": "node dist/server.js",
     "lint": "eslint src --ext .ts --fix"
   },
   "keywords": [],

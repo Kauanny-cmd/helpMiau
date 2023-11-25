@@ -39,6 +39,55 @@ export async function postsRoutes(app: FastifyInstance) {
     }))
   })
 
+  app.get('/posts/:id', async (req, res) => {
+    const bodySchema = z.object({
+      postId: z.string(),
+    })
+
+    const postData = bodySchema.parse(req.body)
+    try {
+      const post = await prisma.post.findUnique({
+        where: {
+          id: postData.postId,
+        },
+        include: {
+          comentarios: {
+            orderBy: {
+              createdAt: 'asc'
+            }
+          }
+        }
+      });
+  
+      if (!post) {
+        return res.status(404).send({ error: 'Post não encontrado' });
+      }
+  
+        return {
+          id: post.id,
+          nomePet: post.nomePet,
+          imagens: post.imagens,
+          filtros: post.filtros,
+          localizacoes: post.localizacao,
+          avisos: post.avisos,
+          isPublic: post.isPublic,
+          usuario: post.userId,
+          excerpt: post.descricao.substring(0, 115).concat('...'),
+          comentarios: post.comentarios.map((comment) => {
+            return {
+              id: comment.id,
+              descricao: comment.descricao,
+              userId: comment.userId,
+            };
+          }),
+        }
+
+    } catch (error) {
+      console.error('Erro na rota /posts/:postId:', error);
+      res.status(500).send({ error: 'Erro interno do servidor' });
+    }
+  });
+
   app.post('/createPost', async (request) => {
     const bodySchema = z.object({
       nomePet: z.string(),

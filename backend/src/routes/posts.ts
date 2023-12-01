@@ -1,8 +1,20 @@
-import { FastifyInstance } from 'fastify'
+import { FastifyInstance, RouteShorthandOptions } from 'fastify'
 import { prisma } from '../lib/prisma'
 import { z } from 'zod'
 
 export async function postsRoutes(app: FastifyInstance) {
+  const postSchema = {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+    },
+  } as RouteShorthandOptions;
+
   app.get('/posts', async () => {
     const posts = await prisma.post.findMany({
       orderBy: {
@@ -39,16 +51,12 @@ export async function postsRoutes(app: FastifyInstance) {
     }))
   })
 
-  app.get('/posts/:id', async (req, res) => {
-    const bodySchema = z.object({
-      postId: z.string(),
-    })
-
-    const postData = bodySchema.parse(req.body)
+  app.get('/posts/:id', postSchema, async (request, response) => {
     try {
+      const postData = request.params.id
       const post = await prisma.post.findUnique({
         where: {
-          id: postData.postId,
+          id: postData,
         },
         include: {
           comentarios: {
@@ -60,31 +68,31 @@ export async function postsRoutes(app: FastifyInstance) {
       });
   
       if (!post) {
-        return res.status(404).send({ error: 'Post não encontrado' });
+        return response.status(404).send({ error: 'Post não encontrado' });
       }
-  
-        return {
-          id: post.id,
-          nomePet: post.nomePet,
-          imagens: post.imagens,
-          filtros: post.filtros,
-          localizacoes: post.localizacao,
-          avisos: post.avisos,
-          isPublic: post.isPublic,
-          usuario: post.userId,
-          excerpt: post.descricao.substring(0, 115).concat('...'),
-          comentarios: post.comentarios.map((comment) => {
-            return {
-              id: comment.id,
-              descricao: comment.descricao,
-              userId: comment.userId,
-            };
-          }),
-        }
+
+      return {
+        id: post.id,
+        nomePet: post.nomePet,
+        imagens: post.imagens,
+        filtros: post.filtros,
+        localizacoes: post.localizacao,
+        avisos: post.avisos,
+        isPublic: post.isPublic,
+        usuario: post.userId,
+        excerpt: post.descricao.substring(0, 115).concat('...'),
+        comentarios: post.comentarios.map((comment) => {
+          return {
+            id: comment.id,
+            descricao: comment.descricao,
+            userId: comment.userId,
+          };
+        }),
+      }
 
     } catch (error) {
       console.error('Erro na rota /posts/:postId:', error);
-      res.status(500).send({ error: 'Erro interno do servidor' });
+      response.status(500).send({ error: `Erro no servidor` });
     }
   });
 

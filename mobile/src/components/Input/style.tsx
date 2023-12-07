@@ -3,31 +3,18 @@ import Colors from '../../global/style'
 
 const styles = StyleSheet.create({
   inputContainer: {
-    marginTop: 8,
+    marginTop: 8
   },
   input: {
     backgroundColor: Colors.whiteColor,
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    fontSize: 16,
-    color: Colors.grayText,
-    borderRadius: 3,
-    margin: 0,
-  },
-  InputLable: {
-    marginBottom: 8,
-    fontWeight: "500",
-    color: 'red',
-  },
-  disable: {
-    borderBottomWidth: 0,
-    marginBottom: 0,
-    paddingHorizontal: 0,
-    marginTop: 0,
-    paddingVertical: 0,
-    margin: 0,
-    padding: 0
-  },
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: Colors.primaryColor,
+    borderRadius: 10,
+    borderColor:Colors.primaryColor,
+    borderWidth: 1,
+  }
 });
 
 export default styles;

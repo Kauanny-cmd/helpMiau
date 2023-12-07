@@ -5,10 +5,10 @@ const style = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    padding: 15,
-    marginBottom: 23,
+    padding: 14,
     borderWidth: 1,
-    borderRadius: 5
+    borderRadius: 5,
+    marginTop:12
   },
   titleButton: {
     fontSize: 16,

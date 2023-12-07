@@ -1,38 +1,32 @@
-import { View, Text } from "react-native";
 import styles from "./style";
-import { Input as InputUI } from "@rneui/themed";
+import Colors from '../../global/style'
+import { View } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 
 type propsInput ={
-    label: string,
     placeholder: string,
-    password: boolean,
+    password?: boolean,
     value: string,
-    error: string,
     onChange: (value:string) => void,
 }
 
 const Input = ({
-    label,
     placeholder,
     password,
     value,
-    error,
     onChange,
 }: propsInput) => {
     return (
         <View style={styles.inputContainer}>
-            {label ? <Text style={styles.InputLable}>{label}</Text> : null}
-            <InputUI
+            <TextInput
                 placeholder={placeholder ? placeholder : ""}
+                placeholderTextColor={Colors.primaryColor}
                 secureTextEntry={password}
                 style={styles.input}
-                inputContainerStyle={styles.disable}
-                containerStyle={styles.disable}
                 onChangeText={(e) => onChange(e)}
                 value={value}
-                errorMessage={error}
             />
-        </View>
+        </View >
     );
 };
 

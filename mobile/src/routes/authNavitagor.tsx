@@ -1,21 +1,19 @@
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 
+import { StackNavigation } from '../types/Routes';
+
 import Login from '../screens/Login';
 import Inicial from '../screens/Inicial';
 import Cadastro from '../screens/Cadastro';
+import Profile from '../screens/Profile';
+import Filter from '../screens/Filter';
+import PostOne from '../screens/PostOne';
 
 import TabNavigation from './tabNavigator';
 
 import Colors from '../global/style'
 
 const Stack = createStackNavigator();
-
-type StackNavigation = {
-  Home: undefined,
-  Login: undefined,
-  Inicial: undefined,
-  Cadastro: undefined,
-}
 
 export type StackTypes = StackNavigationProp<StackNavigation>
 
@@ -26,9 +24,9 @@ export default function AuthNavigator() {
         backgroundColor: Colors.whiteColor,
       },
       headerTintColor: Colors.primaryColor,
-      headerShown: false
+      //headerShown: false
     }}
-    initialRouteName='Inicial'
+      initialRouteName='Home'
     >
       <Stack.Screen name="Inicial" component={Inicial}
         options={{
@@ -53,6 +51,12 @@ export default function AuthNavigator() {
           headerTitle: '',
           headerTransparent: true,
         }}
+      />
+       <Stack.Screen  name='Profile' component={Profile}
+      />
+       <Stack.Screen  name='Filter' component={Filter}
+      />
+       <Stack.Screen  name='PostOne' component={PostOne}
       />
     </Stack.Navigator >
   )

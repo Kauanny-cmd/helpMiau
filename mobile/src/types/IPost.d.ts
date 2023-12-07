@@ -1,14 +1,9 @@
 export type IPost = {
-  data: {
-    id: string;
-    nomePet: string;
-    imagens: string[];
-    filtros: never[];
-    localizacoes: never[];
-    avisos: never[];
-    isPublic: boolean;
-    usuario: string;
-    descricao: string;
-    comentarios: never[];
-  }
+    nomePet: string,
+    descricao: string,
+    imagens: string[],
+    isPublic: boolean,
+    localizacao: string[],
+    filtros: string[],
+    userId: string
 }

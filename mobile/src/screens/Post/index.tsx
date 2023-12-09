@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { IPost } from '../../types/IPost';
 import PostList from '../../services/posts';
@@ -16,7 +17,16 @@ const Post = () => {
   const [text, setText] = useState<string>('');
   const [animal, setAnimal] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
+  const [userID, setUserID] = useState<string>()
 
+  const teste = async () => {
+    const dataStorage = await AsyncStorage.getItem('userID')
+    if (dataStorage) {
+      const userData = JSON.parse(dataStorage);
+      setUserID(userData)
+    }
+  }
+  teste()
   const resetFields = () => {
     setText('');
     setAnimal('');
@@ -30,6 +40,7 @@ const Post = () => {
   };
 
   const publicPost = async () => {
+    teste();
     try {
       const data: IPost = {
         nomePet: animal,
@@ -38,7 +49,7 @@ const Post = () => {
         isPublic: true,
         localizacao: ['latitude', 'longitude'],
         filtros: ['filtro1', 'filtro2'],
-        userId: '0d981edf-8ecf-4292-aa29-efdce427febf',
+        userId: userID,
       };
 
       const response = await PostList.postData(data);

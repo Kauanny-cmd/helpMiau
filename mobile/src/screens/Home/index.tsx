@@ -45,7 +45,7 @@ const Home = () => {
 
         <Image source={logoNome} style={{ width: 160, height: 40 }} />
       </View>
-     
+
       <View style={style.subTop}>
         <Input placeholder="Pesquisar" onChange={() => { console.log('asasas') }} value="" />
         <Button colorButton={Color.backgroundColor}
@@ -55,15 +55,16 @@ const Home = () => {
           onPress={() => navigation.navigate('Filter')}
         />
       </View>
-        <ScrollView>
+      <ScrollView>
         <View style={style.cards}>
-         <FlatList 
-         key={'_'}
-          data={data}
-          renderItem={({item, index }) => 
-            <Card data={item} key={index} onPress={() => navigation.navigate('PostOne'/* , { id: item.id } */)}
-            />}
-          numColumns={2}
+          <FlatList
+            key={'_'}
+            data={data}
+            renderItem={({ item, index }) =>
+              <TouchableOpacity onPress={() => navigation.navigate('PostOne', { id: item.id })}>
+                <Card data={item} key={index}/>
+              </TouchableOpacity>}
+            numColumns={2}
           />
         </View>
       </ScrollView>

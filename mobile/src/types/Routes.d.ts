@@ -5,5 +5,7 @@ export type StackNavigation = {
   Cadastro: undefined,
   Profile: undefined,
   Filter: undefined,
-  PostOne:undefined
+  PostOne:{
+    id:string
+  }
 }

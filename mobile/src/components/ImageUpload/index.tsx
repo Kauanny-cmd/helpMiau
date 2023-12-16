@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { EvilIcons } from '@expo/vector-icons'; 
+
+import Colors  from "../../global/style"
+
+import style from './style'
 
 interface ImageUploadProps {
   onImageSelected: (uri: string) => void;
@@ -32,41 +37,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Selecionar Imagem</Text>
+    <View style={style.container}>
       <TouchableOpacity onPress={pickImage}>
-        <View style={styles.imagePicker}>
+        <View style={style.imagePicker}>
           {selectedImage ? (
-            <Image source={{ uri: selectedImage }} style={styles.imagePreview} />
+            <Image source={{ uri: selectedImage }} style={style.imagePreview}/>
           ) : (
-            <Text style={styles.selectText}>Selecionar Imagem</Text>
+            <EvilIcons name="camera" size={34} color={Colors.primaryColor} />
           )}
         </View>
       </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  imagePicker: {
-    width: 200,
-    height: 200,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imagePreview: {
-    width: '100%',
-    height: '100%',
-  },
-  selectText: {
-    color: '#888',
-  },
-});
 
 export default ImageUpload;

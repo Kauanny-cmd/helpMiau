@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { IPost } from '../../types/IPost';
@@ -19,14 +19,14 @@ const Post = () => {
   const [images, setImages] = useState<string[]>([]);
   const [userID, setUserID] = useState<string>()
 
-  const teste = async () => {
+  const setDataAsync = async () => {
     const dataStorage = await AsyncStorage.getItem('userID')
     if (dataStorage) {
       const userData = JSON.parse(dataStorage);
       setUserID(userData)
     }
   }
-  teste()
+
   const resetFields = () => {
     setText('');
     setAnimal('');
@@ -40,7 +40,7 @@ const Post = () => {
   };
 
   const publicPost = async () => {
-    teste();
+    setDataAsync();
     try {
       const data: IPost = {
         nomePet: animal,
@@ -62,44 +62,47 @@ const Post = () => {
 
   return (
     <Container backgroundColor={'#F8F9FA'}>
-      <View>
-        <Text>Nova postagem</Text>
-        <View>
-          <Text>Fotos</Text>
-          <ImageUpload onImageSelected={handleImageSelected} />
-        </View>
-        <View>
-          <Text>Nome do animal</Text>
-          <Input
-            placeholder=""
-            value={animal}
-            onChange={(value) => setAnimal(value)}
+      <View style={style.container}>
+          <Text>Nova postagem</Text>
+          <View>
+            <Text>Fotos</Text>
+            <View style={style.imagesAnimal}>
+              <ImageUpload onImageSelected={handleImageSelected} />
+              <ImageUpload onImageSelected={handleImageSelected} />
+              <ImageUpload onImageSelected={handleImageSelected} />
+            </View>
+          </View>
+          <View>
+            <Text>Nome do animal</Text>
+            <Input
+              placeholder=""
+              value={animal}
+              onChange={(value) => setAnimal(value)}
+            />
+          </View>
+          <View>
+            <Text>Descrição</Text>
+            <Input
+              style={style.textArea}
+              placeholder=""
+              onChangeText={(value) => setText(value)}
+              value={text}
+            />
+          </View>
+          <View>
+            <Text>Último local visto</Text>
+          </View>
+          <View>
+            <Text>Filtros</Text>
+          </View>
+          <Button
+            onPress={() => publicPost()}
+            colorBorder={Colors.primaryColor}
+            colorButton={Colors.primaryColor}
+            colorText={Colors.whiteColor}
+            title="Publicar"
           />
-        </View>
-        <View>
-          <Text>Descrição</Text>
-          <TextInput
-            style={style.textArea}
-            placeholder="Type here..."
-            multiline={true}
-            numberOfLines={4}
-            onChangeText={(value) => setText(value)}
-            value={text}
-          />
-        </View>
-        <View>
-          <Text>Último local visto</Text>
-        </View>
-        <View>
-          <Text>Filtros</Text>
-        </View>
-        <Button
-          onPress={() => publicPost()}
-          colorBorder={Colors.primaryColor}
-          colorButton={Colors.primaryColor}
-          colorText={Colors.whiteColor}
-          title="Publicar"
-        />
+          
       </View>
     </Container>
   );

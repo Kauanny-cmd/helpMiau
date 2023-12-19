@@ -15,6 +15,11 @@ const style = StyleSheet.create({
     padding: 8,
     fontSize: 16,
   },
+  textTop:{
+    fontSize:20,
+    fontWeight:'400',
+    textAlign: 'center',
+  },
   imagesAnimal:{
     display:'flex',
     flexDirection:'row',
@@ -22,8 +27,8 @@ const style = StyleSheet.create({
     justifyContent:'center'
   },
   map: {
-    width: '100%',
-    height: '100%',
+    width: '50%',
+    height: '50%',
   },
 });
 

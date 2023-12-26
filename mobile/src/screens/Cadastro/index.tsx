@@ -47,9 +47,8 @@ const Cadastro = () => {
       const apiResponse = await UserSign.postUser(name, email, password);
 
       // O usuário foi criado com sucesso
-      await AsyncStorage.setItem('userEmail', JSON.stringify(apiResponse.user.id));
+      await AsyncStorage.setItem('userEmail', JSON.stringify(apiResponse.user.login));
       await AsyncStorage.setItem('userID', JSON.stringify(apiResponse.user.id));
-      console.log('data user id aaaaa:', apiResponse.user.id)
 
       // Retorne o usuário criado, se necessário
       return data;

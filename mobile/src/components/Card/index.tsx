@@ -7,15 +7,13 @@ const Card = ({
   data
 }: IPost) => {
   return (
-    //<Container>
       <View style={style.container}>
       <Image source={{ uri: data.imagens[0] }} style={{ width: 160, height: 188, borderTopLeftRadius: 8, borderTopRightRadius: 8 }} />
         <View style={style.textCard}>
           <Text style={style.fontCard}>{data.nomePet}</Text>
-          <Text style={style.fontCard}>{data.descricao}</Text>
+          <Text style={style.fontCard}>{data.excerpt}</Text>
         </View>
       </View>
-    //</Container>
   )
 }
 export default Card

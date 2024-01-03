@@ -29,7 +29,7 @@ model Post {
   imagens     String[]
   nomePet     String
   descricao   String
-  filtros     String[]
+  filtros     Json?
   localizacao String[]
   avisos      String[]
   isPublic    Boolean          @default(false)

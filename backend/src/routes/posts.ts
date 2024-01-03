@@ -20,15 +20,15 @@ export async function postsRoutes(app: FastifyInstance) {
       orderBy: {
         createdAt: 'asc'
       },
-      include:{
-        comentarios:{
-          orderBy:{
+      include: {
+        comentarios: {
+          orderBy: {
             createdAt: 'asc'
           }
         }
       }
     })
-    
+
     return (posts.map((post) => {
       return {
         id: post.id,
@@ -66,7 +66,7 @@ export async function postsRoutes(app: FastifyInstance) {
           }
         }
       });
-  
+
       if (!post) {
         return response.status(404).send({ error: 'Post não encontrado' });
       }
@@ -103,7 +103,13 @@ export async function postsRoutes(app: FastifyInstance) {
       imagens: z.string().array(),
       isPublic: z.coerce.boolean().default(false),
       localizacao: z.coerce.string().array(),
-      filtros: z.string().array(),
+      filtros: z.object({
+        Cor: z.string().array(),
+        FaseVida: z.string().array(),
+        Porte: z.string().array(),
+        Sexo: z.string().array(),
+        Tipo: z.string().array(),
+      }),
       userId: z.string()
     })
 

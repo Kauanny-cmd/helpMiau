@@ -5,7 +5,7 @@ import Colors from '../global/style';
 
 import Home from '../screens/Home';
 import Post from '../screens/Post';
-import Forum from '../screens/Forum';
+//import Forum from '../screens/Forum';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,20 +30,17 @@ const TabNavigation = () => {
         },
         tabBarActiveTintColor: `${Colors.secondaryColor}`,
         tabBarInactiveTintColor: `${Colors.primaryColor}`,
+        tabBarShowLabel:false,
+        headerShadowVisible: false,
+        headerTransparent: true,
       })}
     >
-      <Tab.Screen name="Home" component={Home} options={{
+      <Tab.Screen name="Home" component={Home}/>
+      <Tab.Screen name="Post" component={Post}/>
+      {/* <Tab.Screen name="Forum" component={Forum} options={{
           headerTitle: '',
           headerTransparent: true,
-        }}/>
-      <Tab.Screen name="Post" component={Post} options={{
-          headerTitle: '',
-          headerTransparent: true,
-        }}/>
-      <Tab.Screen name="Forum" component={Forum} options={{
-          headerTitle: '',
-          headerTransparent: true,
-        }}/>
+        }}/> */}
     </Tab.Navigator>
   );
 }

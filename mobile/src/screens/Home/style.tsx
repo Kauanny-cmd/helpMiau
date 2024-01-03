@@ -8,17 +8,26 @@ const style = StyleSheet.create({
     paddingTop: 12,
     paddingLeft: 18,
     paddingRight: 18,
+    paddingBottom:12,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 60
+  },
+  image: {
+    borderRadius: 100,
+    width: 50,
+    height: 50
+  },
+  imageLogo: {
+    width: '80%',
+    alignItems: 'center'
   },
   subTop: {
     width: '90%',
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between'
-    
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+
   },
   textPar: {
     fontSize: 14,
@@ -31,9 +40,6 @@ const style = StyleSheet.create({
     fontSize: 12,
     marginTop: 5
   },
-  cards:{
-    backgroundColor: Colors.primaryColor
-  }
 });
 
 export default style;

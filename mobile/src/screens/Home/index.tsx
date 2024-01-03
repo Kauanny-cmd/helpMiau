@@ -1,34 +1,40 @@
 import { Image, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { ScrollView, TouchableOpacity, FlatList } from "react-native-gesture-handler";
+import { Ionicons } from '@expo/vector-icons';
 
-import logoNome from '../../../assets/HelpMiAu.png'
-import style from "./style";
+import { StackTypes } from "src/routes/authNavitagor";
+import { IFilters, IPost } from "src/types/IPost";
+import PostList from "../../services/posts";
+
 import Card from "../../components/Card";
 import Container from "../../components/Container";
 import Input from "../../components/Input";
-import Button from "../../components/Button";
-import Color from '../../global/style'
+import FilterModal from "../../components/Filter";
 
-import { StackTypes } from "src/routes/authNavitagor";
-import { IPost } from "src/types/IPost";
+import logoNome from '../../../assets/HelpMiAu.png'
+import semFoto from '../../../assets/noPerfil.png'
 
-import PostList from "../../services/posts";
+import Colors from '../../global/style'
+import style from "./style";
 
 const Home = () => {
   const navigation = useNavigation<StackTypes>();
-  const route = useRoute();
-  //const { paramKey } = route.params;
 
   const [data, setData] = useState<IPost[]>([]);
+  const [profile, setProfile] = useState<boolean>();
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string | null }>({});
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await PostList.getPost();
         setData(response);
-        console.log("Dados: ", response);
+        console.log("Dados: ", data);
+        setProfile(false);
       } catch (error) {
         console.error('Erro na tela Home:', error);
       }
@@ -36,38 +42,82 @@ const Home = () => {
     fetchData();
   }, []);
 
+  const openFilterModal = () => {
+    setFilterModalVisible(true);
+  };
+
+  const closeFilterModal = () => {
+    setFilterModalVisible(false);
+    console.log(selectedFilters);
+  };
+
+  const handleFilterClick = (filters:IFilters) => {
+    setSelectedFilters(filters);
+    openFilterModal();
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  // Função de busca nos nomes
+  const filteredData = data.filter((item) => {
+    // Filtro por termo de busca
+    const searchTermMatch = item.nomePet.toLowerCase().includes(searchTerm.toLowerCase());
+    // Filtro pelas seleções
+    const filterMatch = Object.entries(selectedFilters).every(([key, values]) => {
+      if (!values || values.length === 0) {
+        return true; // Não aplicar filtro se nenhum valor estiver selecionado
+      }
+      // Verificar se a chave existe em 'filtros'
+      if (key in item.filtros) {
+        return values.some((filterValue) => item.filtros[key].includes(filterValue));
+      }
+      // Se a chave não existe em 'filtros', considerar como um não casamento
+      return false;
+    });
+    return searchTermMatch && filterMatch;
+  });
+  
   return (
     <Container>
       <View style={style.topMain}>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Image source={logoNome} style={{ borderRadius: 100, width: 60, height: 60 }} />
+          {
+            profile ? <Image source={logoNome} style={style.image} /> :
+              <Image source={semFoto} style={style.image} />
+          }
         </TouchableOpacity>
-
-        <Image source={logoNome} style={{ width: 160, height: 40 }} />
+        <View style={style.imageLogo}>
+        <Image source={logoNome} style={{ width: 128, height: 30 }} />
+        </View>
       </View>
-
       <View style={style.subTop}>
-        <Input placeholder="Pesquisar" onChange={() => { console.log('asasas') }} value="" />
-        <Button colorButton={Color.backgroundColor}
-          colorText={Color.primaryColor}
-          colorBorder={Color.backgroundColor}
-          title={'iconFiltre'}
-          onPress={() => navigation.navigate('Filter')}
+        <View style={{width:'80%'}}>
+
+        <Input placeholder="Pesquisar" 
+         onChange={(value) => handleSearch(value)}
+         value={searchTerm}
         />
+        </View>
+        <TouchableOpacity onPress={openFilterModal}>
+          <Ionicons name="filter-outline" size={44} color={Colors.primaryColor} style={{paddingRight:2}} />
+        </TouchableOpacity>
       </View>
       <ScrollView>
-        <View style={style.cards}>
+        <View>
           <FlatList
-            key={'_'}
-            data={data}
+            keyExtractor={(item, index) => index.toString()}
+            data={filteredData}
             renderItem={({ item, index }) =>
               <TouchableOpacity onPress={() => navigation.navigate('PostOne', { id: item.id })}>
-                <Card data={item} key={index}/>
+                <Card data={item} key={index} />
               </TouchableOpacity>}
             numColumns={2}
           />
         </View>
       </ScrollView>
+      <FilterModal visible={filterModalVisible} onClose={closeFilterModal} onFilter={handleFilterClick} />
     </Container>
   )
 }

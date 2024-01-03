@@ -73,7 +73,7 @@ const Login = () => {
           password={true}
         />
         {formik.touched.password && formik.errors.password && <Text style={styles.errorText}>{formik.errors.password}</Text>}
-        <TouchableOpacity>
+        <TouchableOpacity style={{marginTop:22}}>
           <Button
             onPress={() => formik.handleSubmit()}
             colorBorder={Colors.primaryColor} colorButton={Colors.primaryColor} colorText={Colors.whiteColor} title='Entrar' />

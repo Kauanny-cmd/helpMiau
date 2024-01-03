@@ -9,6 +9,7 @@ const style = StyleSheet.create({
   },
   foco: {
     width: 320,
+    gap:8
   },
   textPar: {
     fontSize: 14,

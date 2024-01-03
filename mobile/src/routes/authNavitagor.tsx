@@ -6,7 +6,6 @@ import Login from '../screens/Login';
 import Inicial from '../screens/Inicial';
 import Cadastro from '../screens/Cadastro';
 import Profile from '../screens/Profile';
-import Filter from '../screens/Filter';
 import PostOne from '../screens/PostOne';
 
 import TabNavigation from './tabNavigator';
@@ -24,7 +23,6 @@ export default function AuthNavigator() {
         backgroundColor: Colors.whiteColor,
       },
       headerTintColor: Colors.primaryColor,
-      //headerShown: false
     }}
       initialRouteName='Home'
     >
@@ -52,11 +50,12 @@ export default function AuthNavigator() {
           headerTransparent: true,
         }}
       />
-       <Stack.Screen  name='Profile' component={Profile}
-      />
-       <Stack.Screen  name='Filter' component={Filter}
-      />
-       <Stack.Screen  name='PostOne' component={PostOne}
+      <Stack.Screen name='Profile' component={Profile} />
+      <Stack.Screen name='PostOne' component={PostOne}
+        options={{
+          headerTitle: '',
+          headerTransparent: true,
+        }}
       />
     </Stack.Navigator >
   )

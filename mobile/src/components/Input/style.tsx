@@ -3,7 +3,7 @@ import Colors from '../../global/style'
 
 const styles = StyleSheet.create({
   inputContainer: {
-    marginTop: 8
+    marginTop:0
   },
   input: {
     backgroundColor: Colors.whiteColor,

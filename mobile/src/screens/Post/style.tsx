@@ -3,33 +3,43 @@ import Colors  from "../../global/style"
 
 const style = StyleSheet.create({
   container: {
-    padding: 16,
-    width:'100%',
-    height:'100%',
-    gap:12
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: Colors.backgroundColor,
-    borderRadius: 4,
-    padding: 8,
-    fontSize: 16,
+   padding:4,
+   marginTop:12
   },
   textTop:{
     fontSize:20,
-    fontWeight:'400',
+    fontWeight:'500',
     textAlign: 'center',
+  },
+  subText:{
+    fontSize:14,
+    fontWeight:'400',
   },
   imagesAnimal:{
     display:'flex',
     flexDirection:'row',
-    gap:4,
-    justifyContent:'center'
+    gap:8,
+    justifyContent:'center',
+    padding:4
   },
   map: {
-    width: '50%',
-    height: '50%',
+    width: '100%',
+    height: 130,
   },
+  containerView:{
+    gap:8
+  },
+  btt:{
+    backgroundColor: Colors.primaryLightColor,
+    width:'100%',
+    justifyContent:'center',
+    borderRadius:4,
+    padding:12,
+  },
+  txtBotao:{
+    fontSize:12,
+    color: Colors.primaryColor,
+  }
 });
 
 export default style;

@@ -6,10 +6,10 @@ const style = StyleSheet.create({
     borderColor: Colors.primaryColor,
     borderWidth: 1,
     borderRadius:10,
-    width:'33%',
+    width:'30%',
     height:150,
     alignItems:'center',
-    justifyContent:'center'
+    justifyContent:'center',
   },
   imagePicker: {
     width: 200,
@@ -18,7 +18,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
   imagePreview: {
-    width:'57%',
+    width:'53%',
     height:150,
     borderRadius:10,
   },

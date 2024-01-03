@@ -12,7 +12,7 @@ type ButtonProps = {
   colorBorder?: string;
   title: string;
   link?: boolean;
-  onPress?: ((event: GestureResponderEvent) => void) | undefined
+  onPress?: ((event: GestureResponderEvent) => void) | undefined;
 }
 
 const Button = ({

@@ -8,11 +8,10 @@ const style = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderRadius: 5,
-    marginTop:12
   },
   titleButton: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "400",
     paddingHorizontal: 4,
     lineHeight: 18
   },

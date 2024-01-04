@@ -25,6 +25,7 @@ const style = StyleSheet.create({
   map: {
     width: '100%',
     height: 130,
+    borderRadius:20
   },
   containerView:{
     gap:8

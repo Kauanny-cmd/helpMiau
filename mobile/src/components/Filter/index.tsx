@@ -27,7 +27,6 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onFilter })
 
   const handleFilterPress = () => {
     onFilter(selectedItems);
-    console.log('lalal ', selectedItems)
     onClose();
   };
 
@@ -45,19 +44,13 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onFilter })
         updatedCategory.length = 0;
         updatedCategory.push(value);
       }
-
+      // Retorna o valor selecionado de acordo com a categoria
       return {
         ...prevSelectedItems,
         [category]: updatedCategory,
       };
     });
   };
-
-  const handleFilter = () => {
-    // Faça o que precisar com os dados selecionados (armazenados em selectedItems)
-    console.log('Dados selecionados:', selectedItems);
-  };
-
 
   return (
     <Modal visible={visible} animationType="slide">
@@ -101,4 +94,5 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onFilter })
     </Modal>
   );
 }
+
 export default FilterModal;

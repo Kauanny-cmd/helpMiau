@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import MapView, { LatLng, Marker } from 'react-native-maps';
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { IPost } from '../../types/IPost';
+import { IFilters, IPost } from '../../types/IPost';
 import PostList from '../../services/posts';
 
 import Input from '../../components/Input';
@@ -18,14 +18,6 @@ import Select from '../../components/Select';
 import Colors from '../../global/style';
 import style from './style';
 
-interface selections {
-  Tipo: string
-  Porte: string
-  Cor: string
-  FaseVida: string
-  Sexo: string
-}
-
 const Post = () => {
   const [descricao, setDescricao] = useState<string>('');
   const [animal, setAnimal] = useState<string>('');
@@ -37,7 +29,7 @@ const Post = () => {
   const [mapModalVisible, setMapModalVisible] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedCoordinates, setSelectedCoordinates] = useState<LatLng | null>(null);
-  const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string | null }>({});
+  const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] }>({});
 
   const openMapModal = () => {
     setMapModalVisible(true);
@@ -62,9 +54,14 @@ const Post = () => {
     openMapModal();
   };
 
-  const handleFilterClick = (filters: selections) => {
-    //setSelectedFilters(filters);
-    setSelectedFilters(filters);
+  const handleFilterClick = (filters:IFilters) => {
+    setSelectedFilters({
+      Cor:filters.Cor,
+      FaseVida: filters.FaseVida,
+      Porte: filters.Porte,
+      Sexo: filters.Sexo,
+      Tipo: filters.Tipo
+    });
     openFilterModal();
   };
 
@@ -73,9 +70,7 @@ const Post = () => {
       setLatitude(selectedCoordinates.latitude);
       setLongitude(selectedCoordinates.longitude);
     }
-    console.log('tela post user', selectedFilters);
-    setSelectedFilters(selectedFilters);
-  }, [selectedCoordinates, selectedFilters]);
+  }, [selectedCoordinates]);
 
   const setDataAsync = async () => {
     const dataStorage = await AsyncStorage.getItem('userID')
@@ -93,6 +88,7 @@ const Post = () => {
     setLatitude(0);
     setLongitude(0);
     setSelectedCoordinates(null);
+    setSelectedFilters({})
   };
 
   const handleImageSelected = (imageUri: string) => {
@@ -110,7 +106,7 @@ const Post = () => {
         imagens: images,
         isPublic: true,
         localizacao: [`${latitude}`, `${longitude}`],
-        filtros: [`${selectedFilters}`],
+        filtros: selectedFilters,
         userId: userID,
       };
 
@@ -173,23 +169,20 @@ const Post = () => {
 
           <View style={style.containerView}>
             <Text style={style.subText}>Filtros</Text>
-            {filterModalVisible ? //arrumar visualização
+            {selectedFilters ? //arrumar visualização
               (
-                <View>
-                  {Object.keys(selectedFilters).map((category) => (
-                    <View key={category}>
-                      <FlatList
-                        data={selectedFilters[category]}
-                        renderItem={({ item }) => (
-                          <TouchableOpacity key={item} >
-                            <Select selector={item} />
-                          </TouchableOpacity>
-                        )}
-                        numColumns={3}
-                      />
-                    </View>
-                  ))}
-                </View>
+                <View style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', justifyContent:"flex-start" }}>
+                {Object.keys(selectedFilters).map((category) => (
+                  <View key={category}>
+                    <FlatList
+                      data={selectedFilters[category]}
+                      renderItem={({ item }) => (
+                        <Select selector={item} />
+                      )}
+                    />
+                  </View>
+                ))}
+              </View>
               )
               :
               (

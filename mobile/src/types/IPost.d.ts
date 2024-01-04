@@ -1,10 +1,18 @@
+export interface IFilters {
+    Cor: string[];
+    FaseVida: string[];
+    Porte: string[];
+    Sexo: string[];
+    Tipo: string[];
+  }
+
 export type IPost = {
     nomePet: string,
     descricao: string,
     imagens: string[],
     isPublic: boolean,
     localizacao: string[],
-    filtros: string[],
+    filtros:IFilters,
     userId: string
 }
 

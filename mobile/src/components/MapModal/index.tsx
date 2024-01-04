@@ -82,11 +82,12 @@ const MapModal: React.FC<MapModalProps> = ({ visible, onClose, onMarkerClick }) 
         <View style={style.buttonContainer}>
           {markerCoordinates ? (
             <Button
-              title="OK"
+              title="Selecionar local"
               onPress={onClose}
-              colorButton={Colors.secondaryColor}
-              colorBorder={Colors.secondaryColor}
+              colorButton={Colors.primaryColor}
+              colorBorder={Colors.primaryColor}
               colorText={Colors.whiteColor}
+              elevation={4}
             />
           ) : (
             <></>

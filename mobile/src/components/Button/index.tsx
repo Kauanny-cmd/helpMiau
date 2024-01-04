@@ -12,6 +12,7 @@ type ButtonProps = {
   colorBorder?: string;
   title: string;
   link?: boolean;
+  elevation?: number;
   onPress?: ((event: GestureResponderEvent) => void) | undefined;
 }
 
@@ -21,6 +22,7 @@ const Button = ({
   colorBorder,
   title,
   link,
+  elevation,
   onPress,
   ...rest
 }: ButtonProps) => {
@@ -28,6 +30,7 @@ const Button = ({
     <TouchableOpacity
       style={{
         ...styles.container,
+        elevation:elevation,
         backgroundColor: link ? "transparent" : colorButton,
         borderColor: colorBorder,
       }}

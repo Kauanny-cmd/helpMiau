@@ -15,17 +15,13 @@ const TabNavigation = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = '';
-
           if (route.name === 'Home') {
             iconName = focused
               ? 'paw'
               : 'paw-outline';
           } else if (route.name === 'Post') {
             iconName = focused ? 'add-circle-sharp' : 'add-circle-outline';
-          } else if (route.name === 'Forum') {
-            iconName = focused ? 'chatbubbles-sharp' : 'chatbubbles-outline';
           }
-
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: `${Colors.secondaryColor}`,
@@ -33,14 +29,11 @@ const TabNavigation = () => {
         tabBarShowLabel:false,
         headerShadowVisible: false,
         headerTransparent: true,
+        headerShown: false,
       })}
     >
       <Tab.Screen name="Home" component={Home}/>
       <Tab.Screen name="Post" component={Post}/>
-      {/* <Tab.Screen name="Forum" component={Forum} options={{
-          headerTitle: '',
-          headerTransparent: true,
-        }}/> */}
     </Tab.Navigator>
   );
 }

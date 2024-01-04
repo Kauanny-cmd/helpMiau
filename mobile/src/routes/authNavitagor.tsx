@@ -28,8 +28,7 @@ export default function AuthNavigator() {
     >
       <Stack.Screen name="Inicial" component={Inicial}
         options={{
-          headerTitle: '',
-          headerTransparent: true,
+          headerShown:false
         }}
       />
       <Stack.Screen name="Login" component={Login}
@@ -46,8 +45,7 @@ export default function AuthNavigator() {
       />
       <Stack.Screen name="Home" component={TabNavigation}
         options={{
-          headerTitle: '',
-          headerTransparent: true,
+          headerShown:false
         }}
       />
       <Stack.Screen name='Profile' component={Profile} />

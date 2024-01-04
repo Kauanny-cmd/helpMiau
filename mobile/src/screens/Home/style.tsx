@@ -26,8 +26,8 @@ const style = StyleSheet.create({
     width: '90%',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
-
+    justifyContent: 'space-between',
+    marginBottom:8
   },
   textPar: {
     fontSize: 14,

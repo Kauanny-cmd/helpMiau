@@ -51,7 +51,7 @@ const Home = () => {
     console.log(selectedFilters);
   };
 
-  const handleFilterClick = (filters:IFilters) => {
+  const handleFilterClick = (filters: IFilters) => {
     setSelectedFilters(filters);
     openFilterModal();
   };
@@ -78,7 +78,7 @@ const Home = () => {
     });
     return searchTermMatch && filterMatch;
   });
-  
+
   return (
     <Container>
       <View style={style.topMain}>
@@ -89,22 +89,24 @@ const Home = () => {
           }
         </TouchableOpacity>
         <View style={style.imageLogo}>
-        <Image source={logoNome} style={{ width: 128, height: 30 }} />
+          <Image source={logoNome} style={{ width: 128, height: 30 }} />
         </View>
       </View>
       <View style={style.subTop}>
-        <View style={{width:'80%'}}>
-
-        <Input placeholder="Pesquisar" 
-         onChange={(value) => handleSearch(value)}
-         value={searchTerm}
-        />
+        <View style={{ width: '80%' }}>
+          <Input placeholder="Pesquisar"
+            onChange={(value) => handleSearch(value)}
+            value={searchTerm}
+          />
         </View>
         <TouchableOpacity onPress={openFilterModal}>
-          <Ionicons name="filter-outline" size={44} color={Colors.primaryColor} style={{paddingRight:2}} />
+          <Ionicons name="filter-outline" size={44} color={Colors.primaryColor} style={{ paddingRight: 2 }} />
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      <ScrollView
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+      >
         <View>
           <FlatList
             keyExtractor={(item, index) => index.toString()}

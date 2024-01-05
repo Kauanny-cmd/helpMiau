@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { useEffect, useState } from 'react';
+import { View, Text, Dimensions, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { Image } from '@rneui/base';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,13 +13,13 @@ import PostList from '../../services/posts';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Container from '../../components/Container';
-import MapModal from '../../components/MapModal';
 
 import logo from '../../../assets/HelpMiAu.png'
 import logoNome from '../../../assets/HelpMiAu.png'
 import semFoto from '../../../assets/noPerfil.png'
 
 import Colors from '../../global/style';
+import styles from './style';
 
 interface LatLng {
   latitude: number;
@@ -29,11 +29,15 @@ interface LatLng {
 const PostOne = () => {
   const [post, setPost] = useState<IPost>();
   const [report, setReport] = useState<string>();
-  const [userId, setUserId] = useState<string>();
   const [comentarios, setcomentarios] = useState<IComentario[]>()
   const [imagens, setimagens] = useState<string[]>();
   const [selectedCoordinates, setSelectedCoordinates] = useState<LatLng | null>(null);
+
+  const [userId, setUserId] = useState<string>();
+  const [userIdBD, setUserIdBD] = useState<string>();
+
   const [profile, setProfile] = useState<boolean>();
+  const [index, setIndex] = useState<number>(0);
 
   const windowWidth = Dimensions.get('window').width;
   const itemWidth = windowWidth - 40;
@@ -41,7 +45,7 @@ const PostOne = () => {
   const route = useRoute();
   const paramKey = route.params;
   const renderItem = ({ item }) => (
-    <Text>{item}</Text>
+    <Image source={{ uri: item }} style={{ width: "60%", height: 200, borderRadius: 10 }} />
   );
 
   useEffect(() => {
@@ -53,21 +57,24 @@ const PostOne = () => {
         setcomentarios(response.comentarios)
         setimagens(response.imagens)
         setProfile(false)
+        setUserIdBD(response.usuario)
         //
         const latitude = parseFloat(response.localizacoes[0])
         const longitude = parseFloat(response.localizacoes[1])
         const coordinates: LatLng = { latitude, longitude };
         setSelectedCoordinates(coordinates)
         //
-        console.log(selectedCoordinates)
+        //console.log(selectedCoordinates)
       } catch (error) {
         console.error('Erro na tela Home:', error);
       }
     }
+
     const setIdStorage = async () => {
-      const dataStorage = await AsyncStorage.getItem('userEmail')
-      if (dataStorage) {
-        const userData = JSON.parse(dataStorage);
+      //const dataStorage = await AsyncStorage.getItem('userEmail');
+      const dataId = await AsyncStorage.getItem('userID');
+      if (dataId) {
+        const userData = JSON.parse(dataId);
         setUserId(userData)
       }
     }
@@ -90,6 +97,15 @@ const PostOne = () => {
       const response = await PostList.postReport(paramKey.id, data);
       console.log('Resposta da solicitação:', response);
       resetFields();
+      if (response) {
+        Alert.alert(
+          'Reporter realizado com sucesso!',
+          '',
+          [
+            { text: 'Ok'}
+          ]
+        );
+      }
     } catch (error) {
       console.error('Erro ao publicar:', error);
     }
@@ -97,61 +113,83 @@ const PostOne = () => {
 
   return (
     <Container backgroundColor={'#F8F9FA'}>
-      <Image source={logo} style={{ width: 160, height: 38 }} />
+      <Image source={logo} style={{ width: 120, height: 28, marginTop: 18 }} />
       <ScrollView>
-        <View>
-          <Text >{post?.nomePet}</Text>
-          <Text>Postado por {post?.userId}</Text>
-          {
-            profile ? <Image source={logoNome} style={{ borderRadius: 100, width: 60, height: 60 }} /> :
-              <Image source={semFoto} style={{ borderRadius: 100, width: 60, height: 60 }} />
-          }
+        <View style={styles.viewTop}>
+          <View style={{ width: '75%'/* , backgroundColor:'#448' */ }}>
+            <Text >{post?.nomePet}</Text>
+            <Text>Postado por {post?.userId}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', display: "flex", width: '25%', alignItems: 'center', justifyContent: 'flex-end' }}>
+            {
+              profile ? <Image source={logoNome} style={{ borderRadius: 100, width: 60, height: 60 }} /> :
+                <Image source={semFoto} style={{ borderRadius: 100, width: 40, height: 40 }} />
+            }
+          </View>
         </View>
 
-        <View >
+        <View style={{ alignItems: 'center', justifyContent: 'center', gap: 24 }}>
           <Carousel
+            layout="default"
             data={post?.imagens}
             renderItem={renderItem}
             sliderWidth={windowWidth}
             itemWidth={itemWidth}
-            layout="default"
+            onSnapToItem={(index) => setIndex(index)}
           />
-          {/* Adicione um indicador de paginação se desejar */}
-          {/*  <Pagination
+          <Pagination
             dotsLength={imagens?.length}
-            activeDotIndex={0} // Pode ser vinculado ao estado se quiser
-            containerStyle={styles.paginationContainer}
-            dotStyle={styles.paginationDot}
-            inactiveDotStyle={styles.paginationInactiveDot}
+            activeDotIndex={index}
+            dotStyle={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              marginHorizontal: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.92)'
+            }}
             inactiveDotOpacity={0.4}
             inactiveDotScale={0.6}
-          /> */}
+            tappableDots={true}
+          />
+        </View>
+        <View style={styles.viewDescription}>
+          <Text>{post?.excerpt}</Text>
+        </View>
+        <View style={styles.viewMap}>
+          <Text>Última localização</Text>
+          {selectedCoordinates ?
+            <MapView style={{ ...styles.map, borderRadius: 10, flex: 1 }}
+              region={{
+                ...selectedCoordinates,
+                latitude: selectedCoordinates?.latitude,
+                longitude: selectedCoordinates?.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
 
-        </View>
-        <View>
-          <Text>{post?.descricao}</Text>
-        </View>
-        <View>
-          <Text>Mapa</Text>
-          {selectedCoordinates ? <MapView style={{ height: 200 }} initialRegion={{
-            ...selectedCoordinates, latitude: selectedCoordinates?.latitude, longitude: selectedCoordinates?.longitude, latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}>
-            <Marker coordinate={selectedCoordinates} title="Selected Location" />
-          </MapView> : <Text>Carregando localizações</Text>
+            >
+              <Marker coordinate={selectedCoordinates} title="Localização selecionada" />
+            </MapView>
+            :
+            <Text>Carregando localizações</Text>
           }
         </View>
-        <View>
+        <View style={styles.viewAvisos}>
           <Text>Avisos</Text>
-          {comentarios && comentarios.length > 0 ? (
-            comentarios.map((item: IComentario, index: number) => (
-              <Text key={index}>{item.descricao}</Text>
-            ))
-          ) : (
-            <Text>Nenhum aviso disponível</Text>
-          )}
+          <View style={{gap:8}}>
+            {comentarios && comentarios.length > 0 ? (
+              comentarios.map((item: IComentario, index: number) => (
+                <View style={styles.comentarios}>
+                  <Text key={index} style={styles.textComment}>{item.descricao}</Text>
+                  <Text style={{fontWeight:'600'}}>Postado por </Text>
+                </View>
+              ))
+            ) : (
+              <Text>Nenhum aviso disponível</Text>
+            )}
+          </View>
         </View>
-        <View>
+        <View style={styles.viewFooter}>
           <Input
             placeholder="Adicionar aviso"
             value={report}
@@ -162,33 +200,25 @@ const PostOne = () => {
             colorButton={Colors.primaryColor}
             colorText={Colors.whiteColor}
             title="Reportar"
+            elevation={4}
           />
+          {
+            userIdBD != userId ? // colocar ==
+              <Button
+                //onPress={() => reportPost()}
+                colorBorder={Colors.secondaryColor}
+                colorButton={Colors.secondaryColor}
+                colorText={Colors.whiteColor}
+                title="Encontrado!"
+                elevation={4}
+              />
+              :
+              <></>
+          }
         </View>
       </ScrollView>
     </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  carouselImage: {
-    width: '100%',
-    height: 200, // Altura desejada
-    borderRadius: 10, // Borda arredondada, ajuste conforme necessário
-  },
-  paginationContainer: {
-    position: 'absolute',
-    bottom: 0,
-    paddingVertical: 8,
-  },
-  paginationDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 8,
-    backgroundColor: '#333', // Cor dos pontos ativos
-  },
-  paginationInactiveDot: {
-    backgroundColor: '#999', // Cor dos pontos inativos
-  },
-});
 export default PostOne;

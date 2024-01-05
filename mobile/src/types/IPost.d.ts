@@ -8,7 +8,7 @@ export interface IFilters {
 
 export type IPost = {
     nomePet: string,
-    descricao: string,
+    excerpt: string,
     imagens: string[],
     isPublic: boolean,
     localizacao: string[],

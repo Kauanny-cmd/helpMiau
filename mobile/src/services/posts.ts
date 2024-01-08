@@ -41,6 +41,17 @@ const PostList = {
       console.error('Erro na solicitação:', error);
       throw error;
     }
+  },
+  deletePost:async (postId:string, userId:string)=>{
+    try{
+      const response = await api.delete(`/deletePost/${postId}`, {
+        data: { postId, userId },
+      });
+      return response.data
+    }catch (error){
+      console.error('Erro na solicitação:', error);
+      throw error;
+    }
   }
 };
 

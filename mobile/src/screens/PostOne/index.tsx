@@ -1,18 +1,20 @@
 import { View, Text, Dimensions, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image } from '@rneui/base';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import MapView, { Marker } from 'react-native-maps';
 
 import { IComentario, IPost, IPostCommentData } from '../../types/IPost';
+import { StackTypes } from '../../routes/authNavitagor';
 import PostList from '../../services/posts';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Container from '../../components/Container';
+import Delete from '../../components/Delete';
 
 import logo from '../../../assets/HelpMiAu.png'
 import logoNome from '../../../assets/HelpMiAu.png'
@@ -27,6 +29,8 @@ interface LatLng {
 }
 
 const PostOne = () => {
+  const navigation = useNavigation<StackTypes>();
+
   const [post, setPost] = useState<IPost>();
   const [report, setReport] = useState<string>();
   const [comentarios, setcomentarios] = useState<IComentario[]>()
@@ -54,21 +58,18 @@ const PostOne = () => {
         const response = await PostList.getPostId(paramKey.id);
         setPost(response);
         console.log("Dados: ", response);
-        setcomentarios(response.comentarios)
-        setimagens(response.imagens)
-        setProfile(false)
-        setUserIdBD(response.usuario)
-        //
-        const latitude = parseFloat(response.localizacoes[0])
-        const longitude = parseFloat(response.localizacoes[1])
+        setcomentarios(response.comentarios);
+        setimagens(response.imagens);
+        setProfile(false);
+        setUserIdBD(response.usuario);
+        const latitude = parseFloat(response.localizacoes[0]);
+        const longitude = parseFloat(response.localizacoes[1]);
         const coordinates: LatLng = { latitude, longitude };
-        setSelectedCoordinates(coordinates)
-        //
-        //console.log(selectedCoordinates)
+        setSelectedCoordinates(coordinates);
       } catch (error) {
         console.error('Erro na tela Home:', error);
       }
-    }
+    };
 
     const setIdStorage = async () => {
       //const dataStorage = await AsyncStorage.getItem('userEmail');
@@ -98,19 +99,43 @@ const PostOne = () => {
       console.log('Resposta da solicitação:', response);
       resetFields();
       if (response) {
-        Alert.alert(
-          'Reporter realizado com sucesso!',
-          '',
-          [
-            { text: 'Ok'}
-          ]
-        );
+        Alert.alert('Reporter realizado com sucesso!', '', [{ text: 'Ok' }]);
       }
     } catch (error) {
       console.error('Erro ao publicar:', error);
     }
   };
 
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  const handleEncontradoPress = () => {
+    toggleModal();
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deletePost(post?.id, userIdBD);
+      navigation.navigate('Home');
+      toggleModal();
+    } catch (error) {
+      console.error('Erro ao excluir postagem:', error);
+    }
+  };
+
+  const deletePost = async (postId: string, userId: string) => {
+    try {
+      const deletedPost = await PostList.deletePost(postId, userId);
+      console.log(deletedPost);
+      navigation.navigate('Home')
+    } catch (error) {
+      console.error('Erro ao excluir postagem:', error);
+    }
+  }
+  const carouselRef = useRef(null);
   return (
     <Container backgroundColor={'#F8F9FA'}>
       <Image source={logo} style={{ width: 120, height: 28, marginTop: 18 }} />
@@ -130,6 +155,7 @@ const PostOne = () => {
 
         <View style={{ alignItems: 'center', justifyContent: 'center', gap: 24 }}>
           <Carousel
+            ref={carouselRef}
             layout="default"
             data={post?.imagens}
             renderItem={renderItem}
@@ -176,12 +202,12 @@ const PostOne = () => {
         </View>
         <View style={styles.viewAvisos}>
           <Text>Avisos</Text>
-          <View style={{gap:8}}>
+          <View style={{ gap: 8 }}>
             {comentarios && comentarios.length > 0 ? (
               comentarios.map((item: IComentario, index: number) => (
                 <View style={styles.comentarios}>
                   <Text key={index} style={styles.textComment}>{item.descricao}</Text>
-                  <Text style={{fontWeight:'600'}}>Postado por </Text>
+                  <Text style={{ fontWeight: '600' }}>Postado por </Text>
                 </View>
               ))
             ) : (
@@ -203,9 +229,9 @@ const PostOne = () => {
             elevation={4}
           />
           {
-            userIdBD != userId ? // colocar ==
+            userIdBD == userId ? // colocar ==
               <Button
-                //onPress={() => reportPost()}
+                onPress={handleEncontradoPress}
                 colorBorder={Colors.secondaryColor}
                 colorButton={Colors.secondaryColor}
                 colorText={Colors.whiteColor}
@@ -217,6 +243,14 @@ const PostOne = () => {
           }
         </View>
       </ScrollView>
+      {/* Modal de exclusão */}
+      <Delete
+        isModalVisible={isModalVisible}
+        toggleModal={toggleModal}
+        handleConfirmDelete={(postId, userId) => handleConfirmDelete(postId, userId)}
+        postId={post?.id || ''} // Verifica se post e post.id existem antes de acessar
+        userId={userIdBD}
+      />
     </Container>
   );
 };

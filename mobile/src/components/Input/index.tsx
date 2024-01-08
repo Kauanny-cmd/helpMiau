@@ -8,6 +8,8 @@ type propsInput ={
     password?: boolean,
     value: string,
     onChange: (value:string) => void,
+    height?: number,
+    borderRadius?: number,
 }
 
 const Input = ({
@@ -15,6 +17,8 @@ const Input = ({
     password,
     value,
     onChange,
+    height,
+    borderRadius
 }: propsInput) => {
     return (
         <View style={styles.inputContainer}>
@@ -22,7 +26,11 @@ const Input = ({
                 placeholder={placeholder ? placeholder : ""}
                 placeholderTextColor={Colors.primaryColor}
                 secureTextEntry={password}
-                style={styles.input}
+                style={{
+                    ...styles.input,
+                    height:height,
+                    borderRadius: borderRadius ? borderRadius : 10
+                }}
                 onChangeText={(e) => onChange(e)}
                 value={value}
             />

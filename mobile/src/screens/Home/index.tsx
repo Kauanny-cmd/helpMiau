@@ -33,13 +33,15 @@ const Home = () => {
       try {
         const response = await PostList.getPost();
         setData(response);
-        console.log("Dados: ", data);
         setProfile(false);
       } catch (error) {
         console.error('Erro na tela Home:', error);
       }
     }
-    fetchData();
+    const fetchInterval = setInterval(fetchData, 5000); // Atualiza a cada 5 segundos 
+    return () => {
+      clearInterval(fetchInterval); // Limpa o intervalo ao desmontar o componente
+    };
   }, []);
 
   const openFilterModal = () => {

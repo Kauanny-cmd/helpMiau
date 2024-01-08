@@ -46,7 +46,7 @@ const Login = () => {
           setError(error.message);
         } else {
           //console.log('Login bem-sucedido:', data);
-          navigation.navigate('Home');
+          navigation.navigate('Bichinhos');
         }
       } catch (e) {
         console.error('Erro ao processar login:', e);

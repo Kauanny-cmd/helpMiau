@@ -1,5 +1,5 @@
 export type StackNavigation = {
-  Home: undefined,
+  Bichinhos: undefined,
   Login: undefined,
   Inicial: undefined,
   Cadastro: undefined,

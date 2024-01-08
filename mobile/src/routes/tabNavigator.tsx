@@ -5,6 +5,7 @@ import Colors from '../global/style';
 
 import Home from '../screens/Home';
 import Post from '../screens/Post';
+import Profile from '../screens/Profile';
 //import Forum from '../screens/Forum';
 
 const Tab = createBottomTabNavigator();
@@ -15,25 +16,38 @@ const TabNavigation = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = '';
-          if (route.name === 'Home') {
+          if (route.name === 'Bichinhos') {
             iconName = focused
               ? 'paw'
               : 'paw-outline';
           } else if (route.name === 'Post') {
             iconName = focused ? 'add-circle-sharp' : 'add-circle-outline';
+          } else if(route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline'
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: `${Colors.secondaryColor}`,
-        tabBarInactiveTintColor: `${Colors.primaryColor}`,
-        tabBarShowLabel:false,
+        tabBarActiveTintColor: `${Colors.primaryColor}`,
+        tabBarInactiveTintColor: `${Colors.grayText}`,
+        //tabBarShowLabel:false,
         headerShadowVisible: false,
-        headerTransparent: true,
-        headerShown: false,
+        //headerTransparent: true,
+        //headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={Home}/>
-      <Tab.Screen name="Post" component={Post}/>
+      <Tab.Screen name="Bichinhos" component={Home}/>
+      <Tab.Screen name="Post" component={Post}
+      options={{
+        headerTitle:'Adicionar bichinhos',
+        title: 'Adicionar bichinhos'
+      }}
+      />
+      <Tab.Screen name='Profile' component={Profile}
+      options={{
+        headerTitle:'Perfil',
+        title: 'Perfil'
+      }}
+      />
     </Tab.Navigator>
   );
 }

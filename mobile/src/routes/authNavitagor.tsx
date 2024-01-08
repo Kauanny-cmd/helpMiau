@@ -5,7 +5,6 @@ import { StackNavigation } from '../types/Routes';
 import Login from '../screens/Login';
 import Inicial from '../screens/Inicial';
 import Cadastro from '../screens/Cadastro';
-import Profile from '../screens/Profile';
 import PostOne from '../screens/PostOne';
 
 import TabNavigation from './tabNavigator';
@@ -24,7 +23,7 @@ export default function AuthNavigator() {
       },
       headerTintColor: Colors.primaryColor,
     }}
-      initialRouteName='Home'
+      initialRouteName='Bichinhos'
     >
       <Stack.Screen name="Inicial" component={Inicial}
         options={{
@@ -43,16 +42,15 @@ export default function AuthNavigator() {
           headerTransparent: true,
         }}
       />
-      <Stack.Screen name="Home" component={TabNavigation}
+      <Stack.Screen name="Bichinhos" component={TabNavigation}
         options={{
-          headerShown:false
+          headerShown:false,
         }}
       />
-      <Stack.Screen name='Profile' component={Profile} />
       <Stack.Screen name='PostOne' component={PostOne}
         options={{
           headerTitle: '',
-          headerTransparent: true,
+          headerTransparent: false,
         }}
       />
     </Stack.Navigator >

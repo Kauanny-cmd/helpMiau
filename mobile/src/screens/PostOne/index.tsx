@@ -16,7 +16,6 @@ import Button from '../../components/Button';
 import Container from '../../components/Container';
 import Delete from '../../components/Delete';
 
-import logo from '../../../assets/HelpMiAu.png'
 import logoNome from '../../../assets/HelpMiAu.png'
 import semFoto from '../../../assets/noPerfil.png'
 
@@ -48,6 +47,9 @@ const PostOne = () => {
 
   const route = useRoute();
   const paramKey = route.params;
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
   const renderItem = ({ item }) => (
     <Image source={{ uri: item }} style={{ width: "60%", height: 200, borderRadius: 10 }} />
   );
@@ -62,12 +64,17 @@ const PostOne = () => {
         setimagens(response.imagens);
         setProfile(false);
         setUserIdBD(response.usuario);
+
         const latitude = parseFloat(response.localizacoes[0]);
         const longitude = parseFloat(response.localizacoes[1]);
         const coordinates: LatLng = { latitude, longitude };
         setSelectedCoordinates(coordinates);
+
+        setLoading(false);
+        setRefreshing(false); 
       } catch (error) {
         console.error('Erro na tela Home:', error);
+        setRefreshing(false);
       }
     };
 
@@ -81,7 +88,7 @@ const PostOne = () => {
     }
     fetchData();
     setIdStorage();
-  }, [])
+  }, [refreshing])
 
   const resetFields = () => {
     setReport('');
@@ -98,8 +105,10 @@ const PostOne = () => {
       const response = await PostList.postReport(paramKey.id, data);
       console.log('Resposta da solicitação:', response);
       resetFields();
+
       if (response) {
         Alert.alert('Reporter realizado com sucesso!', '', [{ text: 'Ok' }]);
+        setRefreshing(true);
       }
     } catch (error) {
       console.error('Erro ao publicar:', error);
@@ -119,7 +128,7 @@ const PostOne = () => {
   const handleConfirmDelete = async () => {
     try {
       await deletePost(post?.id, userIdBD);
-      navigation.navigate('Home');
+      navigation.navigate('Bichinhos');
       toggleModal();
     } catch (error) {
       console.error('Erro ao excluir postagem:', error);
@@ -130,7 +139,7 @@ const PostOne = () => {
     try {
       const deletedPost = await PostList.deletePost(postId, userId);
       console.log(deletedPost);
-      navigation.navigate('Home')
+      navigation.navigate('Bichinhos');
     } catch (error) {
       console.error('Erro ao excluir postagem:', error);
     }
@@ -138,111 +147,121 @@ const PostOne = () => {
   const carouselRef = useRef(null);
   return (
     <Container backgroundColor={'#F8F9FA'}>
-      <Image source={logo} style={{ width: 120, height: 28, marginTop: 18 }} />
-      <ScrollView>
-        <View style={styles.viewTop}>
-          <View style={{ width: '75%'/* , backgroundColor:'#448' */ }}>
-            <Text >{post?.nomePet}</Text>
-            <Text>Postado por {post?.userId}</Text>
-          </View>
-          <View style={{ flexDirection: 'row', display: "flex", width: '25%', alignItems: 'center', justifyContent: 'flex-end' }}>
-            {
-              profile ? <Image source={logoNome} style={{ borderRadius: 100, width: 60, height: 60 }} /> :
-                <Image source={semFoto} style={{ borderRadius: 100, width: 40, height: 40 }} />
-            }
-          </View>
-        </View>
-
-        <View style={{ alignItems: 'center', justifyContent: 'center', gap: 24 }}>
-          <Carousel
-            ref={carouselRef}
-            layout="default"
-            data={post?.imagens}
-            renderItem={renderItem}
-            sliderWidth={windowWidth}
-            itemWidth={itemWidth}
-            onSnapToItem={(index) => setIndex(index)}
-          />
-          <Pagination
-            dotsLength={imagens?.length}
-            activeDotIndex={index}
-            dotStyle={{
-              width: 10,
-              height: 10,
-              borderRadius: 5,
-              marginHorizontal: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.92)'
+      {
+        loading ?
+          <View
+            style={{
+              height: '82%',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
-            inactiveDotOpacity={0.4}
-            inactiveDotScale={0.6}
-            tappableDots={true}
-          />
-        </View>
-        <View style={styles.viewDescription}>
-          <Text>{post?.excerpt}</Text>
-        </View>
-        <View style={styles.viewMap}>
-          <Text>Última localização</Text>
-          {selectedCoordinates ?
-            <MapView style={{ ...styles.map, borderRadius: 10, flex: 1 }}
-              region={{
-                ...selectedCoordinates,
-                latitude: selectedCoordinates?.latitude,
-                longitude: selectedCoordinates?.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-
-            >
-              <Marker coordinate={selectedCoordinates} title="Localização selecionada" />
-            </MapView>
-            :
-            <Text>Carregando localizações</Text>
-          }
-        </View>
-        <View style={styles.viewAvisos}>
-          <Text>Avisos</Text>
-          <View style={{ gap: 8 }}>
-            {comentarios && comentarios.length > 0 ? (
-              comentarios.map((item: IComentario, index: number) => (
-                <View style={styles.comentarios}>
-                  <Text key={index} style={styles.textComment}>{item.descricao}</Text>
-                  <Text style={{ fontWeight: '600' }}>Postado por </Text>
-                </View>
-              ))
-            ) : (
-              <Text>Nenhum aviso disponível</Text>
-            )}
+          >
+            <Image source={require("../../../assets/dogWalking.gif")} style={{ width: 130, height: 130, marginBottom: 100 }} />
           </View>
-        </View>
-        <View style={styles.viewFooter}>
-          <Input
-            placeholder="Adicionar aviso"
-            value={report}
-            onChange={(value) => setReport(value)} />
-          <Button
-            onPress={() => reportPost()}
-            colorBorder={Colors.primaryColor}
-            colorButton={Colors.primaryColor}
-            colorText={Colors.whiteColor}
-            title="Reportar"
-            elevation={4}
-          />
-          {
-            userIdBD == userId ? // colocar ==
+          :
+          <ScrollView>
+            <View style={styles.viewTop}>
+              <View style={{ width: '75%'/* , backgroundColor:'#448' */ }}>
+                <Text >{post?.nomePet}</Text>
+                <Text>Postado por {post?.userId}</Text>
+              </View>
+              <View style={{ flexDirection: 'row', display: "flex", width: '25%', alignItems: 'center', justifyContent: 'flex-end' }}>
+                {
+                  profile ? <Image source={logoNome} style={{ borderRadius: 100, width: 60, height: 60 }} /> :
+                    <Image source={semFoto} style={{ borderRadius: 100, width: 40, height: 40 }} />
+                }
+              </View>
+            </View>
+            <View style={{ alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+              <Carousel
+                ref={carouselRef}
+                layout="default"
+                data={post?.imagens}
+                renderItem={renderItem}
+                sliderWidth={windowWidth}
+                itemWidth={itemWidth}
+                onSnapToItem={(index) => setIndex(index)}
+              />
+              <Pagination
+                dotsLength={imagens?.length}
+                activeDotIndex={index}
+                dotStyle={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 5,
+                  marginHorizontal: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.92)'
+                }}
+                inactiveDotOpacity={0.4}
+                inactiveDotScale={0.6}
+                tappableDots={true}
+              />
+            </View>
+            <View style={styles.viewDescription}>
+              <Text>{post?.excerpt}</Text>
+            </View>
+            <View style={styles.viewMap}>
+              <Text>Última localização</Text>
+              {selectedCoordinates ?
+                <MapView style={{ ...styles.map, borderRadius: 10, flex: 1 }}
+                  region={{
+                    ...selectedCoordinates,
+                    latitude: selectedCoordinates?.latitude,
+                    longitude: selectedCoordinates?.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                >
+                  <Marker coordinate={selectedCoordinates} title="Localização selecionada" />
+                </MapView>
+                :
+                <Text>Carregando localizações</Text>
+              }
+            </View>
+            <View style={styles.viewAvisos}>
+              <Text>Avisos</Text>
+              <View style={{ gap: 8 }}>
+                {comentarios && comentarios.length > 0 ? (
+                  comentarios.map((item: IComentario, index: number) => (
+                    <View style={styles.comentarios}>
+                      <Text key={index} style={styles.textComment}>{item.descricao}</Text>
+                      <Text style={{ fontWeight: '600' }}>Postado por </Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text style={styles.txtBotao}>Nenhum reporte postado</Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.viewFooter}>
+              <Input
+                placeholder="Adicionar aviso"
+                value={report}
+                onChange={(value) => setReport(value)} />
               <Button
-                onPress={handleEncontradoPress}
-                colorBorder={Colors.secondaryColor}
-                colorButton={Colors.secondaryColor}
+                onPress={() => reportPost()}
+                colorBorder={Colors.primaryColor}
+                colorButton={Colors.primaryColor}
                 colorText={Colors.whiteColor}
-                title="Encontrado!"
+                title="Reportar"
                 elevation={4}
               />
-              :
-              <></>
-          }
-        </View>
-      </ScrollView>
+              {
+                userIdBD == userId ?
+                  <Button
+                    onPress={handleEncontradoPress}
+                    colorBorder={Colors.secondaryColor}
+                    colorButton={Colors.secondaryColor}
+                    colorText={Colors.whiteColor}
+                    title="Encontrado!"
+                    elevation={4}
+                  />
+                  :
+                  <></>
+              }
+            </View>
+          </ScrollView>
+      }
       {/* Modal de exclusão */}
       <Delete
         isModalVisible={isModalVisible}

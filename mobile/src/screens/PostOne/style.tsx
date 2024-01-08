@@ -64,6 +64,16 @@ const styles = StyleSheet.create({
     padding:22,
     gap:8,
     marginTop:-12
+  },
+  txtBotao:{
+    fontSize:12,
+    color: Colors.primaryColor,
+    backgroundColor: Colors.primaryLightColor,
+    width:'100%',
+    justifyContent:'center',
+    borderRadius:4,
+    padding:12,
+    marginBottom:-12
   }
 });
 

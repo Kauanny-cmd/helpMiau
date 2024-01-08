@@ -1,4 +1,4 @@
-import { Image, View } from "react-native";
+import { ActivityIndicator, Image, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView, TouchableOpacity, FlatList } from "react-native-gesture-handler";
@@ -21,7 +21,8 @@ import style from "./style";
 
 const Home = () => {
   const navigation = useNavigation<StackTypes>();
-
+  
+  const [loading, setLoading] = useState(true); 
   const [data, setData] = useState<IPost[]>([]);
   const [profile, setProfile] = useState<boolean>();
   const [filterModalVisible, setFilterModalVisible] = useState(false);
@@ -34,11 +35,12 @@ const Home = () => {
         const response = await PostList.getPost();
         setData(response);
         setProfile(false);
+        setLoading(false);
       } catch (error) {
         console.error('Erro na tela Home:', error);
       }
     }
-    const fetchInterval = setInterval(fetchData, 5000); // Atualiza a cada 5 segundos 
+    const fetchInterval = setInterval(fetchData, 5000); // Atualiza a cada  segundos 
     return () => {
       clearInterval(fetchInterval); // Limpa o intervalo ao desmontar o componente
     };
@@ -110,15 +112,20 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <FlatList
-            keyExtractor={(item, index) => index.toString()}
-            data={filteredData}
-            renderItem={({ item, index }) =>
-              <TouchableOpacity onPress={() => navigation.navigate('PostOne', { id: item.id })}>
-                <Card data={item} key={index} />
-              </TouchableOpacity>}
-            numColumns={2}
-          />
+        {loading ? (
+            <ActivityIndicator size="large" color={Colors.primaryColor} />
+          ) : (
+            <FlatList
+              keyExtractor={(item, index) => index.toString()}
+              data={filteredData}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity onPress={() => navigation.navigate('PostOne', { id: item.id })}>
+                  <Card data={item} key={index} />
+                </TouchableOpacity>
+              )}
+              numColumns={2}
+            />
+          )}
         </View>
       </ScrollView>
       <FilterModal visible={filterModalVisible} onClose={closeFilterModal} onFilter={handleFilterClick} />

@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView, TouchableOpacity, FlatList } from "react-native-gesture-handler";
@@ -21,8 +21,8 @@ import style from "./style";
 
 const Home = () => {
   const navigation = useNavigation<StackTypes>();
-  
-  const [loading, setLoading] = useState(true); 
+
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState<IPost[]>([]);
   const [profile, setProfile] = useState<boolean>();
   const [filterModalVisible, setFilterModalVisible] = useState(false);
@@ -85,35 +85,33 @@ const Home = () => {
 
   return (
     <Container>
-      <View style={style.topMain}>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          {
-            profile ? <Image source={logoNome} style={style.image} /> :
-              <Image source={semFoto} style={style.image} />
-          }
-        </TouchableOpacity>
-        <View style={style.imageLogo}>
-          <Image source={logoNome} style={{ width: 128, height: 30 }} />
-        </View>
-      </View>
-      <View style={style.subTop}>
-        <View style={{ width: '80%' }}>
-          <Input placeholder="Pesquisar"
-            onChange={(value) => handleSearch(value)}
-            value={searchTerm}
-          />
-        </View>
-        <TouchableOpacity onPress={openFilterModal}>
-          <Ionicons name="filter-outline" size={44} color={Colors.primaryColor} style={{ paddingRight: 2 }} />
-        </TouchableOpacity>
-      </View>
       <ScrollView
         horizontal={false}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={style.textPar}>Veja a lista de bichinhos desaparecidos e busque pelo nome</Text>
+        <View style={style.subTop}>
+          <View style={{ width: '86%' }}>
+            <Input placeholder="Pesquisar"
+              onChange={(value) => handleSearch(value)}
+              value={searchTerm}
+              height={36}
+              borderRadius={8}
+            />
+          </View>
+          <TouchableOpacity onPress={openFilterModal}>
+            <Ionicons name="filter-outline" size={28} color={Colors.primaryColor} style={{ paddingRight: 2 }} />
+          </TouchableOpacity>
+        </View>
         <View>
-        {loading ? (
-            <ActivityIndicator size="large" color={Colors.primaryColor} />
+          {loading ? (
+            <View style={{
+              height: '82%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+              <Image source={require("../../../assets/dogWalking.gif")} style={{ width: 130, height: 130, marginTop: 30 }} />
+            </View>
           ) : (
             <FlatList
               keyExtractor={(item, index) => index.toString()}
@@ -127,8 +125,8 @@ const Home = () => {
             />
           )}
         </View>
+        <FilterModal visible={filterModalVisible} onClose={closeFilterModal} onFilter={handleFilterClick} />
       </ScrollView>
-      <FilterModal visible={filterModalVisible} onClose={closeFilterModal} onFilter={handleFilterClick} />
     </Container>
   )
 }

@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
-import Colors from '../../global/style'
+import Colors from '../../global/style';
+import Fonts from '../../global/fonts';
+
 
 const style = StyleSheet.create({
   topMain: {
@@ -12,11 +14,12 @@ const style = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent:'space-between'
   },
   image: {
     borderRadius: 100,
-    width: 50,
-    height: 50
+    width: 40,
+    height: 40
   },
   imageLogo: {
     width: '80%',
@@ -27,13 +30,15 @@ const style = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom:8
+    marginBottom:8,
+    alignItems: 'center'
   },
   textPar: {
     fontSize: 14,
     marginTop: 8,
-    color: Colors.primaryColor,
-    textAlign: "center",
+    color: Colors.darkColor,
+    textAlign:'justify',
+    padding:12
   },
   errorText: {
     color: Colors.dangerColor,

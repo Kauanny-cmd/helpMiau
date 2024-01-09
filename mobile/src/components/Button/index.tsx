@@ -13,6 +13,7 @@ type ButtonProps = {
   title: string;
   link?: boolean;
   elevation?: number;
+  height?: number;
   onPress?: ((event: GestureResponderEvent) => void) | undefined;
 }
 
@@ -23,6 +24,7 @@ const Button = ({
   title,
   link,
   elevation,
+  height,
   onPress,
   ...rest
 }: ButtonProps) => {
@@ -33,6 +35,7 @@ const Button = ({
         elevation:elevation,
         backgroundColor: link ? "transparent" : colorButton,
         borderColor: colorBorder,
+        height:height
       }}
       {...rest}
       onPress={onPress} 

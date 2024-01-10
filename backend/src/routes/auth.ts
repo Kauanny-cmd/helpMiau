@@ -5,6 +5,31 @@ import * as jwt from 'jsonwebtoken';
 
 export async function authRoutes(app: FastifyInstance) {
 
+  app.get('/usuario/:email', async (req, reply) => {
+    try {
+      const paramsSchema = z.object({
+        email: z.string().email(),
+      });
+
+      const { email } = paramsSchema.parse(req.params);
+
+      const usuario = await prisma.usuario.findUnique({
+        where: {
+          login: email,
+        },
+      });
+
+      if (usuario) {
+        reply.code(200).send(usuario);
+      } else {
+        reply.code(404).send({ error: 'Usuário não encontrado' });
+      }
+    } catch (error) {
+      console.error(error);
+      reply.code(500).send({ error: 'Erro ao obter informações do usuário.' });
+    }
+  });
+
   app.post('/register', async (req, reply) => {
     const bodySchema = z.object({
       nome: z.string(),

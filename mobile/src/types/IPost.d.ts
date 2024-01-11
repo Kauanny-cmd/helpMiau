@@ -7,13 +7,14 @@ export interface IFilters {
   }
 
 export type IPost = {
+    id:string,
     nomePet: string,
     excerpt: string,
     imagens: string[],
     isPublic: boolean,
     localizacao: string[],
     filtros:IFilters,
-    userId: string
+    usuario: string
 }
 
 export type IPostCommentData = {

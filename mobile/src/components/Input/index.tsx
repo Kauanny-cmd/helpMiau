@@ -6,10 +6,11 @@ import { TextInput } from "react-native-gesture-handler";
 type propsInput ={
     placeholder: string,
     password?: boolean,
-    value: string,
+    value: string|undefined,
     onChange: (value:string) => void,
     height?: number,
     borderRadius?: number,
+    editable?: boolean,
 }
 
 const Input = ({
@@ -18,7 +19,8 @@ const Input = ({
     value,
     onChange,
     height,
-    borderRadius
+    borderRadius,
+    editable
 }: propsInput) => {
     return (
         <View style={styles.inputContainer}>
@@ -33,6 +35,7 @@ const Input = ({
                 }}
                 onChangeText={(e) => onChange(e)}
                 value={value}
+                editable={editable}
             />
         </View >
     );

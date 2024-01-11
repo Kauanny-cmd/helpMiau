@@ -7,7 +7,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Colors.blurColor,
     height: '100%',
     opacity: 1
   },

@@ -9,5 +9,6 @@ export default {
   grayText: 'rgba(151, 151, 151, 0.8)',
   grayTextColor4: '#BDBDBD',
   primaryLightColor: 'rgba(88,142,149,0.2)',
-  primaryDarkColor: '#97C4CB'
+  primaryDarkColor: '#97C4CB',
+  blurColor:'rgba(0, 0, 0, 0.5)'
 }

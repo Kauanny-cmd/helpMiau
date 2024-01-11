@@ -1,89 +1,281 @@
 import { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Image } from '@rneui/base';
 import { useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ScrollView } from 'react-native-gesture-handler';
+import { EvilIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 import { supabase } from '../../utils/supabase';
 import { StackTypes } from '../../routes/authNavitagor';
+import { IUser } from '../../types/IUser';
+import UserSign from '../../services/user';
 
 import Container from '../../components/Container';
 import Button from '../../components/Button';
-import logoNome from '../../../assets/HelpMiAu.png'
+import Input from '../../components/Input';
 
-import Colors from '../../global/style'
-import style from './style'
+import Colors from '../../global/style';
+import style from './style';
 
 const Profile = () => {
   const navigation = useNavigation<StackTypes>();
 
-  const [email, setEmail] = useState()
+  const [originalUserData, setOriginalUserData] = useState<IUser>();
+  const [userData, setUserData] = useState<IUser>();
+  const [profile, setProfile] = useState<boolean>();
+  const [image, setImage] = useState<string>();
+
+  const [editing, setEditing] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+
+  const [selectedImage, setSelectedImage] = useState<string>();
 
   useEffect(() => {
-    const setEmailStorage = async () => {
-      const dataStorage = await AsyncStorage.getItem('userEmail')
-      if (dataStorage) {
-        const userData = JSON.parse(dataStorage);
-        setEmail(userData)
+    const loadData = async () => {
+      try {
+        const getDataFromStorage = async (key: string) => {
+          try {
+            const jsonValue = await AsyncStorage.getItem(key);
+            if (jsonValue !== null) {
+              const data = JSON.parse(jsonValue);
+              console.log('Dados recuperados do AsyncStorage:', data);
+              return data;
+            } else {
+              console.log('Nenhum dado encontrado para a chave:', key);
+              return null;
+            }
+          } catch (error) {
+            console.error('Erro ao recuperar dados do AsyncStorage:', error);
+            return null;
+          }
+        };
+
+        const retrievedData = await getDataFromStorage('userData');
+        console.log('Dados recuperados:', retrievedData);
+
+        setUserData(retrievedData);
+        setOriginalUserData(retrievedData); // Salvar dados originais
+
+        if (userData?.avatarUrl) {
+          setProfile(true)
+          setImage(userData?.avatarUrl);
+          console.log(image);
+        }
+
+        // Definir o estado de loading como false após obter os dados
+        setLoading(false);
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        // Definir o estado de loading como false em caso de erro
+        setLoading(true);
       }
-    }
-    setEmailStorage();
+    };
+
+    loadData();
   }, []);
+
+  const handlePetsChange = (pets: string[]) => {
+    setUserData({ ...userData, pets });
+  };
+
+  const editUser = async (userId: string, userData: IUser) => {
+    try {
+      const updatedUser = await UserSign.updateUser(userId, userData);
+      console.log('Usuário atualizado:', updatedUser);
+      console.log('Usuário atualizado:', userId, userData);
+      setEditing(false);
+    } catch (error) {
+      console.error('Erro ao editar usuário:', error);
+    }
+  }
+
+  const cancelEdit = () => {
+    // Restaurar valores originais ao cancelar
+    setUserData(originalUserData);
+    setEditing(false);
+  };
 
   const logout = async () => {
     const { error } = await supabase.auth.signOut()
-    navigation.navigate('Login')
-
+    navigation.navigate('Inicial')
     console.log(error)
   }
+
+  const pickImage = async () => {
+    // Permissões necessárias do dispositivo
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      setSelectedImage(result.assets[0].uri);
+      setImage(result.assets[0].uri);
+      setUserData({...userData, avatarUrl: result.assets[0].uri})
+    }
+  };
 
   return (
     <Container backgroundColor={'#F8F9FA'}>
       <View style={style.container}>
-        <View style={style.topMain}>
-          <Image source={logoNome} style={{ width: 160, height: 40 }} />
-          <Text onPress={() => navigation.goBack()}>X</Text>
-        </View>
-        <ScrollView>
-          <Image source={require('../../../assets/HelpMiAu.png')} style={{ width: 90, height: 90, borderRadius: 100 }} />
-
-          <View style={style.main}>
-            <View style={{ gap: 14 }}>
-              <View>
-                <Text style={style.label}>Nome</Text>
-                <Text style={style.textLabel}>Help Miau</Text>
+        {
+          loading ?
+            <Image source={require("../../../assets/dogWalking.gif")} style={{ width: 130, height: 130, marginBottom: 100 }} />
+            :
+            <>
+              <View style={style.card}>
+                {editing ? (
+                  <View style={style.editSection}>
+                    {profile ? (
+                      <TouchableOpacity onPress={pickImage}>
+                        <View style={style.profile}>
+                        <Image source={{uri:image}} style={style.profile} />
+                        </View>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity onPress={pickImage}>
+                        <View style={style.profile}>
+                          {selectedImage ? (
+                            <Image source={{ uri: selectedImage }} style={style.profile} />
+                          ) : (
+                            <Image source={require('../../../assets/noPerfil.png')} style={style.profile} />
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    )}
+                    <EvilIcons name="pencil" size={22} color={Colors.whiteColor} style={style.iconEdit} />
+                  </View>
+                ) : (
+                  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    {profile ? (
+                      <Image source={{ uri: image }} style={style.profile} />
+                    ) : (
+                      <Image source={require('../../../assets/noPerfil.png')} style={style.profile} />
+                    )}
+                  </View>
+                )}
+                <ScrollView>
+                  <View style={style.main}>
+                    <View style={style.section}>
+                      <Text style={style.label}>Nome</Text>
+                      {editing ? (
+                        <Input
+                          placeholder='Nome'
+                          value={userData?.nome}
+                          onChange={(text) =>
+                            setUserData({ ...userData, nome: text })}
+                          height={40}
+                        />
+                      ) : (
+                        <Text style={style.textLabel}>{userData?.nome ? userData.nome : 'Sem nome cadastrado'}</Text>
+                      )}
+                    </View>
+                    <View style={style.section}>
+                      <Text style={style.label}>Email</Text>
+                      {editing ? (
+                        <Input
+                          placeholder='Email'
+                          value={userData?.login}
+                          editable={false}
+                          height={40}
+                        />
+                      ) : (
+                        <Text style={style.textLabel}>{userData?.login}</Text>
+                      )}
+                    </View>
+                    <View style={style.section}>
+                      <Text style={style.label}>Telefone</Text>
+                      {editing ? (
+                        <Input
+                          placeholder='Telefone'
+                          value={userData?.telefone}
+                          onChange={(text) => setUserData({ ...userData, telefone: text })}
+                          height={40}
+                        />
+                      ) : (
+                        <Text style={style.textLabel}>{userData?.telefone ? userData.telefone : 'Sem telefone cadastrado'}</Text>
+                      )}
+                    </View>
+                    <View style={style.section}>
+                      <Text style={style.label}>Nome do(s) bichinhos(s)</Text>
+                      {editing ? (
+                        <Input
+                          placeholder='Bichinhos'
+                          value={userData?.pets.join(', ')}
+                          onChange={(text) =>
+                            handlePetsChange(text.split(', '))
+                          }
+                          height={40}
+                        />
+                      ) : (
+                        <Text style={style.textLabel}>{userData?.pets.length ? userData.pets.join(', ') : 'Sem pets cadastrados'}</Text>
+                      )}
+                    </View>
+                  </View>
+                </ScrollView>
               </View>
-              <View>
-                <Text style={style.label}>Email</Text>
-                <Text style={style.textLabel}>{email}</Text>
+              <View style={style.viewFooter}>
+                {
+                  !editing
+                    ?
+                    <View style={style.button}>
+                      <Button
+                        onPress={() => setEditing(true)}
+                        colorButton={Colors.primaryColor}
+                        colorBorder={Colors.primaryColor}
+                        colorText={Colors.whiteColor}
+                        height={40}
+                        elevation={2}
+                        title='Editar dados'
+                      />
+                    </View>
+                    :
+                    <View style={style.button}>
+                      <Button
+                        onPress={() => editUser(userData.id, userData)}
+                        colorButton={Colors.primaryColor}
+                        colorBorder={Colors.primaryColor}
+                        colorText={Colors.whiteColor}
+                        height={40}
+                        elevation={2}
+                        title='Salvar' // Desativa o botão se não estiver editando
+                      />
+                    </View>
+                }
+                {
+                  !editing
+                    ?
+                    <View style={style.button}>
+                      <Button
+                        onPress={() => logout()}
+                        colorButton={Colors.backgroundColor}
+                        colorBorder={Colors.textDangerColor}
+                        colorText={Colors.dangerColor}
+                        height={40}
+                        elevation={2}
+                        title='Sair'
+                      />
+                    </View>
+                    :
+                    <View style={style.button}>
+                      <Button
+                        onPress={cancelEdit}
+                        colorButton={Colors.backgroundColor}
+                        colorBorder={Colors.textDangerColor}
+                        colorText={Colors.dangerColor}
+                        height={40}
+                        elevation={2}
+                        title='Cancelar'
+                      />
+                    </View>
+                }
               </View>
-              <View>
-                <Text style={style.label}>Telefone</Text>
-                <Text style={style.textLabel}>Help Miau</Text>
-              </View>
-              <View>
-                <Text style={style.label}>Nome do(s) pet(s)</Text>
-                <Text style={style.textLabel}>Help Miau</Text>
-              </View>
-            </View>
-            <View>
-              <Button
-                colorButton={Colors.primaryColor}
-                colorBorder={Colors.primaryColor}
-                colorText={Colors.whiteColor}
-                title='Editar dados'
-              />
-              <Button
-                onPress={() => logout()}
-                colorButton={Colors.textDangerColor}
-                colorBorder={Colors.textDangerColor}
-                colorText={Colors.dangerColor}
-                title='Sair'
-              />
-            </View>
-          </View>
-        </ScrollView>
+            </>
+        }
       </View>
     </Container>
   );

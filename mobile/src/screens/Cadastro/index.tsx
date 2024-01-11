@@ -1,6 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from '@rneui/base';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -27,7 +26,6 @@ const Cadastro = () => {
 
   const registerUser = async (name: string, email: string, password: string) => {
     try {
-      await AsyncStorage.clear()
       // Chama o método signUp para criar um novo usuário no Supabase
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -44,11 +42,7 @@ const Cadastro = () => {
         .update({ nome: name, login: email })
         .select();
       // Chame a função postUser para enviar os dados para a API
-      const apiResponse = await UserSign.postUser(name, email, password);
-
-      // O usuário foi criado com sucesso
-      await AsyncStorage.setItem('userEmail', JSON.stringify(apiResponse.user.login));
-      await AsyncStorage.setItem('userID', JSON.stringify(apiResponse.user.id));
+      await UserSign.postUser(name, email, password);
 
       // Retorne o usuário criado, se necessário
       return data;

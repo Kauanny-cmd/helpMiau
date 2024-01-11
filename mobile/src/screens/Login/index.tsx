@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Image } from '@rneui/base';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 
-import { StackTypes } from 'src/routes/authNavitagor';
+import { StackTypes } from '../../routes/authNavitagor';
 import { supabase } from '../../utils/supabase';
+import UserSign from '../../services/user';
 
 import Container from '../../components/Container';
 import Button from '../../components/Button';
@@ -45,7 +47,22 @@ const Login = () => {
           console.error('Erro de login:', error.message);
           setError(error.message);
         } else {
-          //console.log('Login bem-sucedido:', data);
+          // Limpa storage
+          await AsyncStorage.clear()
+          //set de valores
+          const userData = await UserSign.getUser(data.user?.email);
+          const dadosUser = {
+            id: userData.id,
+            nome: userData.nome,
+            login: userData.login,
+            avatarUrl: userData.avatarUrl,
+            telefone: userData.telefone,
+            pets: userData.pets
+          };
+          // salva dados no async do aparelho
+          const jsonValue = JSON.stringify(dadosUser);
+          await AsyncStorage.setItem('userData', jsonValue);
+          // após salva dados, envia para a home
           navigation.navigate('Bichinhos');
         }
       } catch (e) {
@@ -73,7 +90,7 @@ const Login = () => {
           password={true}
         />
         {formik.touched.password && formik.errors.password && <Text style={styles.errorText}>{formik.errors.password}</Text>}
-        <TouchableOpacity style={{marginTop:22}}>
+        <TouchableOpacity style={{ marginTop: 22 }}>
           <Button
             onPress={() => formik.handleSubmit()}
             colorBorder={Colors.primaryColor} colorButton={Colors.primaryColor} colorText={Colors.whiteColor} title='Entrar' />

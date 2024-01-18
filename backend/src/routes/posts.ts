@@ -202,6 +202,12 @@ export async function postsRoutes(app: FastifyInstance) {
         reply.code(403).send({ error: 'Você não tem permissão para excluir este post.' });
         return;
       }
+      // Exclui os comentários vinculados ao post
+      await prisma.comentarioPost.deleteMany({
+        where: {
+          postId: postData.postId,
+        },
+      });
       // Exclui o post se tudo estiver correto
       await prisma.post.delete({
         where: {

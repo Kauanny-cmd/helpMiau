@@ -1,9 +1,10 @@
 export interface IFilters {
+    Tipo: string[];
+    Porte: string[];
+    Pelo: string[];
     Cor: string[];
     FaseVida: string[];
-    Porte: string[];
     Sexo: string[];
-    Tipo: string[];
   }
 
 export type IPost = {

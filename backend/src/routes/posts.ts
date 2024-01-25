@@ -197,6 +197,36 @@ export async function postsRoutes(app: FastifyInstance) {
     }
   })
 
+  app.post('/usuarios/comentarios', async (req, reply) => {
+    try {
+      const { comentarios } = req.body;
+  
+      // Extrair os IDs dos usuários dos comentários
+      const userIds = comentarios.map(comentario => comentario.userId);
+  
+      // Consultar o banco de dados para obter os detalhes de cada usuário
+      const usuarios = await prisma.usuario.findMany({
+        where: {
+          id: {
+            in: userIds,
+          },
+        },
+      });
+  
+      // Construir um objeto com o nome e avatar de cada usuário
+      const usuariosData = usuarios.map(usuario => ({
+        id: usuario.id,
+        nome: usuario.nome,
+      }));
+  
+      // Retornar o objeto com os detalhes dos usuários
+      reply.code(200).send({ usuarios: usuariosData });
+    } catch (error) {
+      console.error(error);
+      reply.code(500).send({ error: 'Erro ao obter informações dos usuários dos comentários.' });
+    }
+  });
+
   app.delete('/deletePost/:id', async (request, reply) => {
     try {
       const bodySchema = z.object({

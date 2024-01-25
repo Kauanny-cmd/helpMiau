@@ -96,6 +96,34 @@ export async function postsRoutes(app: FastifyInstance) {
     }
   });
 
+  app.get('/post/usuario/:id', async (req, reply) => {
+    try {
+      const paramsSchema = z.object({
+        id: z.string(),
+      });
+      
+      const { id } = paramsSchema.parse(req.params);
+  
+      const usuario = await prisma.usuario.findUnique({
+        where: {
+          id: id,
+        },
+      });
+  
+      if (usuario) {
+        reply.code(200).send({
+          nome:usuario.nome,
+          avatarUrl:usuario.avatarUrl
+        });
+      } else {
+        reply.code(404).send({ error: 'Usuário não encontrado' });
+      }
+    } catch (error) {
+      console.error(error);
+      reply.code(500).send({ error: 'Erro ao obter informações do usuário.' });
+    }
+  });
+  
   app.post('/createPost', async (request) => {
     const bodySchema = z.object({
       nomePet: z.string(),

@@ -5,7 +5,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.primaryDarkColor,
     borderRadius: 22,
-    width:100
+    width:100,
+    margin: 2
   },
   txtContainer: {
     paddingHorizontal: 14,

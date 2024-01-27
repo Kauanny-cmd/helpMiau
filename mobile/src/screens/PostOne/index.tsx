@@ -8,6 +8,7 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import MapView, { Marker } from 'react-native-maps';
 
 import { IComentario, IPost, IPostCommentData } from '../../types/IPost';
+import { IUser } from '../../types/IUser';
 import { StackTypes } from '../../routes/authNavitagor';
 import PostList from '../../services/posts';
 
@@ -15,9 +16,6 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Container from '../../components/Container';
 import Delete from '../../components/Delete';
-
-import logoNome from '../../../assets/HelpMiAu.png'
-import semFoto from '../../../assets/noPerfil.png'
 
 import Colors from '../../global/style';
 import styles from './style';
@@ -27,68 +25,120 @@ interface LatLng {
   longitude: number;
 }
 
-const PostOne = () => {
+interface IUserComment {
+  usuarios: [
+    {
+      id: string;
+      nome: string;
+    }
+  ]
+}
+
+const PostOne: React.FC = () => {
   const navigation = useNavigation<StackTypes>();
+  const route = useRoute();
+  const paramKey = route.params;
 
   const [post, setPost] = useState<IPost>();
   const [report, setReport] = useState<string>();
-  const [comentarios, setcomentarios] = useState<IComentario[]>()
-  const [imagens, setimagens] = useState<string[]>();
+  const [comentarios, setComentarios] = useState<IComentario[]>()
+  const [imagens, setImagens] = useState<string[]>();
   const [selectedCoordinates, setSelectedCoordinates] = useState<LatLng | null>(null);
 
-  const [userId, setUserId] = useState<string>();
-  const [userIdBD, setUserIdBD] = useState<string>();
+  const [userData, setUserData] = useState<IUser>();
+  const [image, setImage] = useState<string>();
+  const [user, setUser] = useState<string>();
+  const [userComment, setUserComment] = useState<IUserComment>()
 
   const [profile, setProfile] = useState<boolean>();
   const [index, setIndex] = useState<number>(0);
 
-  const windowWidth = Dimensions.get('window').width;
-  const itemWidth = windowWidth - 40;
+  const sliderWidth = Dimensions.get('window').width * 0.75;
+  const slideWidth = 250;
+  const horizontalMargin = 20;
+  const itemWidth = slideWidth + horizontalMargin * 2;
 
-  const route = useRoute();
-  const paramKey = route.params;
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  const renderItem = ({ item }) => (
-    <Image source={{ uri: item }} style={{ width: "60%", height: 200, borderRadius: 10 }} />
-  );
+  const renderItem = ({ item }) => {
+    return (
+      <Image source={{ uri: item }} style={{ width: "60%", height: 200, borderRadius: 10, alignSelf: 'center' }} />
+    )
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await PostList.getPostId(paramKey.id);
-        setPost(response);
-        console.log("Dados: ", response);
-        setcomentarios(response.comentarios);
-        setimagens(response.imagens);
-        setProfile(false);
-        setUserIdBD(response.usuario);
+        const userData = await getDataFromStorage('userData');
 
-        const latitude = parseFloat(response.localizacoes[0]);
-        const longitude = parseFloat(response.localizacoes[1]);
-        const coordinates: LatLng = { latitude, longitude };
-        setSelectedCoordinates(coordinates);
+        setPost(response);
+        setComentarios(response.comentarios);
+        setImagens(response.imagens);
+
+        if (userData) {
+          setUserData(userData);
+          if (response.comentarios.length > 0) {
+            const coments = await PostList.postUserComentarios(comentarios)
+            console.log(coments)
+            setUserComment(coments)
+          }
+        }
 
         setLoading(false);
-        setRefreshing(false); 
+        setRefreshing(false);
       } catch (error) {
         console.error('Erro na tela Home:', error);
         setRefreshing(false);
       }
     };
 
-    const setIdStorage = async () => {
-      //const dataStorage = await AsyncStorage.getItem('userEmail');
-      const dataId = await AsyncStorage.getItem('userID');
-      if (dataId) {
-        const userData = JSON.parse(dataId);
-        setUserId(userData)
+    const getDataFromStorage = async (key: string): Promise<UserData | null> => {
+      try {
+        const jsonValue = await AsyncStorage.getItem(key);
+        if (jsonValue !== null) {
+          const data = JSON.parse(jsonValue) as UserData;
+          //console.log('Dados recuperados do AsyncStorage:', data);
+          return data;
+        } else {
+          console.log('Nenhum dado encontrado para a chave:', key);
+          return null;
+        }
+      } catch (error) {
+        console.error('Erro ao recuperar dados do AsyncStorage:', error);
+        return null;
       }
-    }
+    };
+
+    const fetchUserData = async () => {
+      try {
+        const responseUserPost = await PostList.getPostUser(post?.usuario);
+        setUser(responseUserPost.nome);
+        //console.log("Dados user: ", user);
+        if (responseUserPost.avatarUrl) {
+          setProfile(true);
+          setImage(responseUserPost.avatarUrl);
+        }
+      } catch (error) {
+        console.error('Erro ao obter dados do usuário do post:', error);
+      }
+    };
+
+    const fetchSelectedCoordinates = () => {
+      if (post && post.localizacoes) {
+        const latitude = parseFloat(post.localizacoes[0]);
+        const longitude = parseFloat(post.localizacoes[1]);
+        const coordinates: LatLng = { latitude, longitude };
+        setSelectedCoordinates(coordinates);
+      }
+    };
+
     fetchData();
-    setIdStorage();
-  }, [refreshing])
+    fetchUserData();
+    fetchSelectedCoordinates();
+  }, [post?.usuario, refreshing]);
 
   const resetFields = () => {
     setReport('');
@@ -98,11 +148,11 @@ const PostOne = () => {
     try {
       const data: IPostCommentData = {
         descricao: report,
-        userId: userId,
-        postId: paramKey.id,
+        userId: userData?.id,
+        postId: post?.id,
       };
 
-      const response = await PostList.postReport(paramKey.id, data);
+      const response = await PostList.postReport(data.postId, data);
       console.log('Resposta da solicitação:', response);
       resetFields();
 
@@ -115,8 +165,6 @@ const PostOne = () => {
     }
   };
 
-  const [isModalVisible, setModalVisible] = useState(false);
-
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -127,7 +175,7 @@ const PostOne = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await deletePost(post?.id, userIdBD);
+      await deletePost(post?.id, userData?.id);
       navigation.navigate('Bichinhos');
       toggleModal();
     } catch (error) {
@@ -145,51 +193,50 @@ const PostOne = () => {
     }
   }
   const carouselRef = useRef(null);
+
+  const getUserDisplayName = (userId: string): string => {
+    const user = userComment?.usuarios.find(user => user.id === userId);
+    return user ? user.nome : 'Usuário';
+  };
+
   return (
     <Container backgroundColor={'#F8F9FA'}>
       {
         loading ?
-          <View
-            style={{
-              height: '82%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Image source={require("../../../assets/dogWalking.gif")} style={{ width: 130, height: 130, marginBottom: 100 }} />
+          <View style={{ ...styles.centerElements, height: '82%' }}>
+            <Image source={require("../../../assets/dogWalking.gif")} style={styles.gif} />
           </View>
           :
           <ScrollView>
             <View style={styles.viewTop}>
-              <View style={{ width: '75%'/* , backgroundColor:'#448' */ }}>
+              <View style={{ width: '75%' }}>
                 <Text >{post?.nomePet}</Text>
-                <Text>Postado por {post?.userId}</Text>
+                <Text>Postado por {user}</Text>
               </View>
-              <View style={{ flexDirection: 'row', display: "flex", width: '25%', alignItems: 'center', justifyContent: 'flex-end' }}>
-                {
-                  profile ? <Image source={logoNome} style={{ borderRadius: 100, width: 60, height: 60 }} /> :
-                    <Image source={semFoto} style={{ borderRadius: 100, width: 40, height: 40 }} />
-                }
+              <View style={styles.viewPerfil}>
+                {profile ? (
+                  <Image source={{ uri: image }} style={styles.profile} />
+                ) : (
+                  <Image source={require('../../../assets/noPerfil.png')} style={styles.profile} />
+                )}
               </View>
             </View>
-            <View style={{ alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+            <View style={styles.centerElements}>
               <Carousel
                 ref={carouselRef}
                 layout="default"
                 data={post?.imagens}
                 renderItem={renderItem}
-                sliderWidth={windowWidth}
+                sliderWidth={sliderWidth}
                 itemWidth={itemWidth}
                 onSnapToItem={(index) => setIndex(index)}
+                loop={true}
+                contentContainerCustomStyle={styles.carousel}
               />
               <Pagination
                 dotsLength={imagens?.length}
                 activeDotIndex={index}
                 dotStyle={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: 5,
-                  marginHorizontal: 0,
                   backgroundColor: 'rgba(0, 0, 0, 0.92)'
                 }}
                 inactiveDotOpacity={0.4}
@@ -225,7 +272,7 @@ const PostOne = () => {
                   comentarios.map((item: IComentario, index: number) => (
                     <View style={styles.comentarios}>
                       <Text key={index} style={styles.textComment}>{item.descricao}</Text>
-                      <Text style={{ fontWeight: '600' }}>Postado por </Text>
+                      <Text style={{ fontWeight: '600' }}>Postado por {getUserDisplayName(item.userId)}</Text>
                     </View>
                   ))
                 ) : (
@@ -247,7 +294,7 @@ const PostOne = () => {
                 elevation={4}
               />
               {
-                userIdBD == userId ?
+                userData?.id == post?.usuario ?
                   <Button
                     onPress={handleEncontradoPress}
                     colorBorder={Colors.secondaryColor}
@@ -266,11 +313,11 @@ const PostOne = () => {
       <Delete
         isModalVisible={isModalVisible}
         toggleModal={toggleModal}
-        handleConfirmDelete={(postId, userId) => handleConfirmDelete(postId, userId)}
+        handleConfirmDelete={handleConfirmDelete}
         postId={post?.id || ''} // Verifica se post e post.id existem antes de acessar
-        userId={userIdBD}
+        userId={userData?.id || ''}
       />
-    </Container>
+    </Container >
   );
 };
 

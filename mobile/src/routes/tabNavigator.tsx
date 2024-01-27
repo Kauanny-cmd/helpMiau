@@ -16,7 +16,7 @@ const TabNavigation = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = '';
-          if (route.name === 'Bichinhos') {
+          if (route.name === 'Overview') {
             iconName = focused
               ? 'paw'
               : 'paw-outline';
@@ -32,10 +32,15 @@ const TabNavigation = () => {
         //tabBarShowLabel:false,
         headerShadowVisible: false,
         //headerTransparent: true,
-        //headerShown: false,
+        headerShown: true,
       })}
     >
-      <Tab.Screen name="Bichinhos" component={Home}/>
+      <Tab.Screen name="Overview" component={Home}
+      options={{
+        headerTitle:'Bichinhos',
+        title:'Bichinhos'
+      }}
+      />
       <Tab.Screen name="Post" component={Post}
       options={{
         headerTitle:'Adicionar bichinhos',

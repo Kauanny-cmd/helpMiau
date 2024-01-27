@@ -19,11 +19,11 @@ export default function AuthNavigator() {
   return (
     <Stack.Navigator screenOptions={{
       headerStyle: {
-        backgroundColor: Colors.whiteColor,
+        backgroundColor: Colors.backgroundColor,
       },
       headerTintColor: Colors.primaryColor,
     }}
-      initialRouteName='Bichinhos'
+    initialRouteName='Bichinhos'
     >
       <Stack.Screen name="Inicial" component={Inicial}
         options={{

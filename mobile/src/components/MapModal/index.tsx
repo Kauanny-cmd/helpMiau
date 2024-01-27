@@ -53,11 +53,18 @@ const MapModal: React.FC<MapModalProps> = ({ visible, onClose, onMarkerClick }) 
     onMarkerClick(coordinate);
   };
 
+  const markerClose = () => {
+    if (markerCoordinates) {
+      onMarkerClick(markerCoordinates)
+    }
+    onClose()
+  }
+
   return (
     <Modal visible={visible} animationType="slide">
       <View style={style.viewContainer}>
         <View style={style.arrowBtt}>
-          <MaterialIcons name="arrow-back-ios" size={22} color={Colors.whiteColor} style={{ marginLeft: 8 }} onPress={onClose}/>
+          <MaterialIcons name="arrow-back-ios" size={22} color={Colors.whiteColor} style={{ marginLeft: 8 }} onPress={onClose} />
         </View>
         <MapView
           style={{ flex: 1 }}
@@ -83,7 +90,7 @@ const MapModal: React.FC<MapModalProps> = ({ visible, onClose, onMarkerClick }) 
           {markerCoordinates ? (
             <Button
               title="Selecionar local"
-              onPress={onClose}
+              onPress={markerClose}
               colorButton={Colors.primaryColor}
               colorBorder={Colors.primaryColor}
               colorText={Colors.whiteColor}

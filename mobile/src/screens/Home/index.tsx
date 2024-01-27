@@ -1,7 +1,7 @@
-import { Image, Text, View } from "react-native";
+import {ScrollView, Image, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { ScrollView, TouchableOpacity, FlatList } from "react-native-gesture-handler";
+import {TouchableOpacity, FlatList } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
 
 import { StackTypes } from "src/routes/authNavitagor";
@@ -13,9 +13,6 @@ import Container from "../../components/Container";
 import Input from "../../components/Input";
 import FilterModal from "../../components/Filter";
 
-import logoNome from '../../../assets/HelpMiAu.png'
-import semFoto from '../../../assets/noPerfil.png'
-
 import Colors from '../../global/style'
 import style from "./style";
 
@@ -24,23 +21,22 @@ const Home = () => {
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<IPost[]>([]);
-  const [profile, setProfile] = useState<boolean>();
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string | null }>({});
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
       try {
         const response = await PostList.getPost();
         setData(response);
-        setProfile(false);
         setLoading(false);
       } catch (error) {
         console.error('Erro na tela Home:', error);
       }
-    }
-    const fetchInterval = setInterval(fetchData, 5000); // Atualiza a cada  segundos 
+    };
+
+    const fetchInterval = setInterval(fetchData, 60000); // Atualiza a cada 60 segundos 
     return () => {
       clearInterval(fetchInterval); // Limpa o intervalo ao desmontar o componente
     };
@@ -122,6 +118,7 @@ const Home = () => {
                 </TouchableOpacity>
               )}
               numColumns={2}
+             scrollEnabled={false}
             />
           )}
         </View>

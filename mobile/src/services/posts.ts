@@ -1,11 +1,11 @@
-import { IPost, IPostCommentData } from "../types/IPost";
+import { IPost, IPostCommentData, IComentario } from "../types/IPost";
 import { api } from "./api";
 
 const PostList = {
   getPost: async () => {
     try {
       const response = await api.get('/posts');
-      console.log("Resposta da solicitação:", response.data);
+      // console.log("Resposta da solicitação:", response.data);
       return response.data;
     } catch (error) {
       console.error('Erro na solicitação:', error);
@@ -16,6 +16,16 @@ const PostList = {
     try {
       const response = await api.get(`/posts/${id}`);
       console.log("Resposta da solicitação:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Erro na solicitação:', error);
+      throw error;
+    }
+  },
+  getPostUser: async (id: string) => {
+    try {
+      const response = await api.get(`/post/usuario/${id}`);
+      //console.log("Resposta da solicitação:", response.data);
       return response.data;
     } catch (error) {
       console.error('Erro na solicitação:', error);
@@ -42,13 +52,22 @@ const PostList = {
       throw error;
     }
   },
-  deletePost:async (postId:string, userId:string)=>{
-    try{
+  postUserComentarios: async (comentarios: Array<IComentario>) => {
+    try {
+      const response = await api.post('/usuarios/comentarios', comentarios)
+      return response.data;
+    } catch (error) {
+      console.error('Erro na solicitação:', error);
+      throw error;
+    }
+  },
+  deletePost: async (postId: string, userId: string) => {
+    try {
       const response = await api.delete(`/deletePost/${postId}`, {
         data: { postId, userId },
       });
       return response.data
-    }catch (error){
+    } catch (error) {
       console.error('Erro na solicitação:', error);
       throw error;
     }

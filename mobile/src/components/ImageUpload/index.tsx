@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { EvilIcons } from '@expo/vector-icons'; 
@@ -9,17 +9,24 @@ import style from './style'
 
 interface ImageUploadProps {
   onImageSelected: (uri: string) => void;
+  resetImages: boolean
 }
 
 interface ImagePickerResult {
-  cancelled: boolean;
+  canceled: boolean;
   assets: Array<{
     uri: string;
   }>;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected, resetImages }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>();
+
+  useEffect(() => {
+    if (resetImages) {
+      setSelectedImage(null);
+    }
+  }, [resetImages]);
 
   const pickImage = async () => {
     // Permissões necessárias do dispositivo
@@ -30,7 +37,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected }) => {
       quality: 1,
     });
 
-    if (!result.cancelled && result.assets.length > 0) {
+    if (!result.canceled && result.assets.length > 0) {
       setSelectedImage(result.assets[0].uri);
       onImageSelected(result.assets[0].uri);
     }

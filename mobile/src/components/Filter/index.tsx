@@ -12,9 +12,10 @@ interface FilterModalProps {
   onClose: () => void;
   onFilter: () => void;
   initialSelectedItems?: { [key: string]: string | null };
+  post?: boolean;
 }
 
-const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onFilter, initialSelectedItems }) => {
+const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onFilter, initialSelectedItems, post }) => {
 
   const [selectedItems, setSelectedItems] = useState<{ [key: string]: string | null }>(initialSelectedItems || {});
   const [editNumber, setEditNumber] = useState<number>(0)
@@ -40,25 +41,22 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onFilter, i
 
   const handleSelect = (category: string, value: string) => {
     setSelectedItems((prevSelectedItems) => {
-      const updatedCategory = [...(prevSelectedItems[category] || [])];
-      const index = updatedCategory.indexOf(value);
-
-      if (index !== -1) {
-        setEditNumber(editNumber - 1)
-        // Remove o valor se já estiver presente
-        updatedCategory.splice(index, 1);
+      // Cria uma cópia do objeto de itens selecionados
+      const updatedSelectedItems = { ...prevSelectedItems };
+      // Verifica se a categoria já foi selecionada e se o valor já está presente nela
+      if (updatedSelectedItems[category] && updatedSelectedItems[category].includes(value)) {
+        // Remove o valor da categoria se já estiver presente
+        updatedSelectedItems[category] = updatedSelectedItems[category].filter(item => item !== value);
       } else {
-        setEditNumber(editNumber + 1)
-        // Adiciona o valor se não estiver presente
-        // Limpa os itens selecionados anteriores na mesma categoria
-        updatedCategory.length = 0;
-        updatedCategory.push(value);
+        // Adiciona o valor à categoria correspondente
+        updatedSelectedItems[category] = [value];
       }
-      // Retorna o valor selecionado de acordo com a categoria
-      return {
-        ...prevSelectedItems,
-        [category]: updatedCategory,
-      };
+      // Atualiza o número de categorias preenchidas
+      const editNumber = Object.keys(updatedSelectedItems).filter(key => updatedSelectedItems[key].length > 0).length;
+      // Define o novo número de categorias preenchidas
+      setEditNumber(editNumber);
+      // Retorna o objeto de itens selecionados atualizado
+      return updatedSelectedItems;
     });
   };
 
@@ -91,12 +89,13 @@ const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onFilter, i
           <TouchableOpacity
             onPress={() => {
               setSelectedItems({}); // Limpa todos os itens selecionados
+              setEditNumber(0);
             }}
           >
             <Text style={style.btt}>Limpar filtros</Text>
           </TouchableOpacity>
           {
-            editNumber > 0 ?
+            !post || editNumber == 6 ?
               <TouchableOpacity onPress={handleFilterPress}>
                 <Text style={style.btts}>Filtrar</Text>
               </TouchableOpacity>

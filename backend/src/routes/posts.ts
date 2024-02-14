@@ -137,6 +137,7 @@ export async function postsRoutes(app: FastifyInstance) {
         Porte: z.string().array(),
         Sexo: z.string().array(),
         Tipo: z.string().array(),
+        Pelo: z.string().array(),
       }),
       userId: z.string()
     })

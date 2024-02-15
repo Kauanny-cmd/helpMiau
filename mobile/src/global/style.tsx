@@ -1,5 +1,5 @@
 export default {
-  whiteColor: '#F9F9FB',
+  whiteColor: '#FFFFFF',
   backgroundColor: '#FAFAFA',
   primaryColor: '#588E95',
   secondaryColor: '#ED6401',
@@ -10,5 +10,6 @@ export default {
   grayTextColor4: '#BDBDBD',
   primaryLightColor: 'rgba(88,142,149,0.2)',
   primaryDarkColor: '#97C4CB',
-  blurColor:'rgba(0, 0, 0, 0.5)'
+  blurColor:'rgba(0, 0, 0, 0.5)',
+  borderColorHeader:'#ECECEC'
 }

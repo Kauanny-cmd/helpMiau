@@ -3,7 +3,7 @@ import Colors from '../../global/style'
 
 const styles = StyleSheet.create({
   inputContainer: {
-    marginTop:0
+    marginTop: 0
   },
   input: {
     backgroundColor: Colors.whiteColor,
@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 14,
     color: Colors.primaryColor,
-    borderColor:Colors.primaryColor,
     borderWidth: 1,
   }
 });

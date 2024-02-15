@@ -9,35 +9,37 @@ interface DeleteProps {
   isModalVisible: boolean;
   toggleModal: () => void;
   handleConfirmDelete: (postId: string, userId: string) => void;
-  postId: string; 
-  userId: string; 
+  postId: string;
+  userId: string;
+  loading: boolean
 }
 
-const Delete: React.FC<DeleteProps> = ({ isModalVisible, toggleModal, handleConfirmDelete, postId, userId }) => {
-  return(
+const Delete: React.FC<DeleteProps> = ({ isModalVisible, toggleModal, handleConfirmDelete, postId, userId, loading }) => {
+  return (
     <Modal visible={isModalVisible} statusBarTranslucent={true} transparent={true}>
-    <View style={style.container}>
-    <View style={style.viewMain}>
-       <Text style={{fontSize:16}}>Deseja excluir a postagem?</Text>
-       <View style={style.btts}>
-         <Button 
-         title="Cancelar"
-         colorBorder={Colors.dangerColor}
-         colorButton={Colors.backgroundColor}
-         colorText={Colors.dangerColor}
-         onPress={toggleModal} 
-         />
-         <Button 
-         title="Confirmar"
-         colorBorder={Colors.primaryColor}
-         colorButton={Colors.primaryColor}
-         colorText={Colors.whiteColor}
-         onPress={() => handleConfirmDelete(postId, userId)} 
-         />
-       </View>
-     </View>
-    </View>
-   </Modal>
+      <View style={style.container}>
+        <View style={style.viewMain}>
+          <Text style={{ fontSize: 16 }}>Deseja excluir a postagem?</Text>
+          <View style={style.btts}>
+            <Button
+              title="Cancelar"
+              colorBorder={Colors.dangerColor}
+              colorButton={Colors.backgroundColor}
+              colorText={Colors.dangerColor}
+              onPress={toggleModal}
+            />
+            <Button
+              title="Confirmar"
+              colorBorder={Colors.primaryColor}
+              colorButton={Colors.primaryColor}
+              colorText={Colors.whiteColor}
+              onPress={() => handleConfirmDelete(postId, userId)}
+              loading={loading}
+            />
+          </View>
+        </View>
+      </View>
+    </Modal>
   )
 }
 export default Delete

@@ -1,5 +1,5 @@
 import React from "react";
-import { GestureResponderEvent, Text, TouchableOpacity } from "react-native";
+import { GestureResponderEvent, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 
 import { Icon } from "@rneui/base";
 
@@ -15,6 +15,7 @@ type ButtonProps = {
   elevation?: number;
   height?: number;
   onPress?: ((event: GestureResponderEvent) => void) | undefined;
+  loading?: boolean;
 }
 
 const Button = ({
@@ -26,28 +27,34 @@ const Button = ({
   elevation,
   height,
   onPress,
+  loading,
   ...rest
 }: ButtonProps) => {
   return (
     <TouchableOpacity
       style={{
         ...styles.container,
-        elevation:elevation,
+        elevation: elevation,
         backgroundColor: link ? "transparent" : colorButton,
         borderColor: colorBorder,
-        height:height
+        height: height
       }}
       {...rest}
-      onPress={onPress} 
+      onPress={onPress}
     >
-      <Text
-        style={{
-          ...styles.titleButton,
-          color: link ? Colors.primaryColor : colorText,
-        }}
-      >
-        {title}
-      </Text>
+      {loading ?
+        <ActivityIndicator
+          color={Colors.whiteColor}
+        />
+        :
+        <Text
+          style={{
+            ...styles.titleButton,
+            color: link ? Colors.primaryColor : colorText,
+          }}
+        >
+          {title}
+        </Text>}
       {link ? (
         <Icon
           name="arrow-forward"

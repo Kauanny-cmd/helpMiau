@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MapView, { LatLng, Marker } from 'react-native-maps';
 import { ScrollView } from 'react-native-gesture-handler';
-import { ALERT_TYPE, Dialog, AlertNotificationRoot } from 'react-native-alert-notification';
+import { ALERT_TYPE, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 import { IFilters, IPost } from '../../types/IPost';
 import { IUser } from '../../types/IUser';
@@ -33,6 +33,7 @@ const Post = () => {
   const [selectedCoordinates, setSelectedCoordinates] = useState<LatLng | null>(null);
   const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] } | null>(null);
   const [resetImages, setResetImages] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -134,11 +135,11 @@ const Post = () => {
 
   const publicPost = async () => {
     if (!animal || !descricao || images.length === 0 || latitude === 0 || longitude === 0 || !selectedFilters) {
-      Dialog.show({
+      Toast.show({
         type: ALERT_TYPE.WARNING,
         title: 'Atenção!',
         textBody: 'Por favor, preencha todos os campos da publicação.',
-        autoClose:2500
+        autoClose: 2500
       })
       return;
     }
@@ -146,6 +147,7 @@ const Post = () => {
       Object.entries(selectedFilters).map(([key, value]) => [key, value || []])
     );
     try {
+      setLoading(true);
       const data: IPost = {
         nomePet: animal,
         descricao: descricao,
@@ -158,17 +160,19 @@ const Post = () => {
       console.log(data);
       const response = await PostList.postData(data);
       console.log('Resposta da solicitação:', response);
-
-      resetFields();
-      Dialog.show({
+      Toast.show({
         type: ALERT_TYPE.SUCCESS,
         title: 'Sucesso!',
         textBody: 'Publicação enviada!',
-        autoClose:2000
+        autoClose: 2000
       })
+      resetFields();
+      
     } catch (error) {
       resetFields();
       console.error('Erro ao publicar:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -178,99 +182,100 @@ const Post = () => {
 
   return (
     <Container backgroundColor={'#F8F9FA'}>
-       <AlertNotificationRoot>
-      <ScrollView style={style.container}
-        contentContainerStyle={{ rowGap: 12, padding: 4, paddingBottom: 30 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={style.containerView}>
-          <Text style={style.subText}>Fotos</Text>
-          <View style={style.imagesAnimal}>
-            <ImageUpload onImageSelected={handleImageSelected} resetImages={resetImages} />
-            <ImageUpload onImageSelected={handleImageSelected} resetImages={resetImages} />
-            <ImageUpload onImageSelected={handleImageSelected} resetImages={resetImages} />
-          </View>
-        </View>
-        <View style={style.containerView}>
-          <Text style={style.subText}>Nome do animal</Text>
-          <Input
-            placeholder=""
-            value={animal}
-            onChange={(value) => setAnimal(value)}
-          />
-        </View>
-        <View style={style.containerView}>
-          <Text style={style.subText}>Descrição</Text>
-          <Input
-            placeholder=""
-            onChange={(value) => setDescricao(value)}
-            value={descricao}
-          />
-        </View>
-        <View style={style.containerView}>
-          <Text style={style.subText}>Último local visto</Text>
-          {selectedCoordinates ? (
-            <MapView style={style.map} initialRegion={{ ...selectedCoordinates, latitudeDelta: 0.01, longitudeDelta: 0.01 }}>
-              <Marker coordinate={selectedCoordinates} title="Localização selecionada" />
-            </MapView>
-          ) : (
-            <View>
-              <TouchableOpacity style={style.btt} onPress={openMapModal}>
-                <Text style={style.txtBotao}>Selecione a última localização</Text>
-              </TouchableOpacity>
+      <AlertNotificationRoot>
+        <ScrollView style={style.container}
+          contentContainerStyle={{ rowGap: 12, padding: 4, paddingBottom: 30 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={style.containerView}>
+            <Text style={style.subText}>Fotos</Text>
+            <View style={style.imagesAnimal}>
+              <ImageUpload onImageSelected={handleImageSelected} resetImages={resetImages} />
+              <ImageUpload onImageSelected={handleImageSelected} resetImages={resetImages} />
+              <ImageUpload onImageSelected={handleImageSelected} resetImages={resetImages} />
             </View>
-          )}
-        </View>
-        <View style={style.containerView}>
-          <View style={style.viewEdit}>
-            <Text style={style.subText}>Filtros</Text>
-            {
-              selectedFilters ?
-                <TouchableOpacity onPress={() => editFiltros()}>
-                  <Text style={style.editText}>Editar</Text>
+          </View>
+          <View style={style.containerView}>
+            <Text style={style.subText}>Nome do animal</Text>
+            <Input
+              placeholder=""
+              value={animal}
+              onChange={(value) => setAnimal(value)}
+            />
+          </View>
+          <View style={style.containerView}>
+            <Text style={style.subText}>Descrição</Text>
+            <Input
+              placeholder=""
+              onChange={(value) => setDescricao(value)}
+              value={descricao}
+            />
+          </View>
+          <View style={style.containerView}>
+            <Text style={style.subText}>Último local visto</Text>
+            {selectedCoordinates ? (
+              <MapView style={style.map} initialRegion={{ ...selectedCoordinates, latitudeDelta: 0.01, longitudeDelta: 0.01 }}>
+                <Marker coordinate={selectedCoordinates} title="Localização selecionada" />
+              </MapView>
+            ) : (
+              <View>
+                <TouchableOpacity style={style.btt} onPress={openMapModal}>
+                  <Text style={style.txtBotao}>Selecione a última localização</Text>
                 </TouchableOpacity>
-                : <></>
+              </View>
+            )}
+          </View>
+          <View style={style.containerView}>
+            <View style={style.viewEdit}>
+              <Text style={style.subText}>Filtros</Text>
+              {
+                selectedFilters ?
+                  <TouchableOpacity onPress={() => editFiltros()}>
+                    <Text style={style.editText}>Editar</Text>
+                  </TouchableOpacity>
+                  : <></>
+              }
+            </View>
+            {selectedFilters ?
+              (
+                <View style={style.viewFilters}>
+                  {Object.keys(selectedFilters).map((category) => (
+                    <View key={category}>
+                      <FlatList
+                        data={selectedFilters[category]}
+                        renderItem={({ item }) => (
+                          <Select selector={item} />
+                        )}
+                        keyExtractor={(item) => item.toString()}
+                        scrollEnabled={false}
+                      />
+                    </View>
+                  ))}
+                </View>
+              )
+              :
+              (
+                <View>
+                  <TouchableOpacity style={style.btt} onPress={openFilterModal}>
+                    <Text style={style.txtBotao}>Selecione as palavras chaves</Text>
+                  </TouchableOpacity>
+                </View>
+              )
             }
           </View>
-          {selectedFilters ?
-            (
-              <View style={style.viewFilters}>
-                {Object.keys(selectedFilters).map((category) => (
-                  <View key={category}>
-                    <FlatList
-                      data={selectedFilters[category]}
-                      renderItem={({ item }) => (
-                        <Select selector={item} />
-                      )}
-                      keyExtractor={(item) => item.toString()}
-                      scrollEnabled={false}
-                    />
-                  </View>
-                ))}
-              </View>
-            )
-            :
-            (
-              <View>
-                <TouchableOpacity style={style.btt} onPress={openFilterModal}>
-                  <Text style={style.txtBotao}>Selecione as palavras chaves</Text>
-                </TouchableOpacity>
-              </View>
-            )
-          }
-        </View>
-        <View style={style.containerView}>
-          <Button
-            onPress={publicPost}
-            colorBorder={Colors.primaryColor}
-            colorButton={Colors.primaryColor}
-            colorText={Colors.whiteColor}
-            title="Publicar"
-          />
-        </View>
-      </ScrollView>
-      <MapModal visible={mapModalVisible} onClose={closeMapModal} onMarkerClick={handleMarkerClick} />
-      <FilterModal visible={filterModalVisible} onClose={closeFilterModal} onFilter={handleFilterClick} initialSelectedItems={selectedFilters} post={true}/>
+          <View style={style.containerView}>
+            <Button
+              onPress={publicPost}
+              colorBorder={Colors.primaryColor}
+              colorButton={Colors.primaryColor}
+              colorText={Colors.whiteColor}
+              title="Publicar"
+              loading={loading}
+            />
+          </View>
+        </ScrollView>
+        <MapModal visible={mapModalVisible} onClose={closeMapModal} onMarkerClick={handleMarkerClick} />
+        <FilterModal visible={filterModalVisible} onClose={closeFilterModal} onFilter={handleFilterClick} initialSelectedItems={selectedFilters} post={true} />
       </AlertNotificationRoot>
     </Container>
   );

@@ -23,11 +23,11 @@ export default function AuthNavigator() {
       },
       headerTintColor: Colors.primaryColor,
     }}
-    initialRouteName='Bichinhos'
+      initialRouteName='Inicial'
     >
       <Stack.Screen name="Inicial" component={Inicial}
         options={{
-          headerShown:false
+          headerShown: false
         }}
       />
       <Stack.Screen name="Login" component={Login}
@@ -44,7 +44,7 @@ export default function AuthNavigator() {
       />
       <Stack.Screen name="Bichinhos" component={TabNavigation}
         options={{
-          headerShown:false,
+          headerShown: false,
         }}
       />
       <Stack.Screen name='PostOne' component={PostOne}

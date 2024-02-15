@@ -9,34 +9,40 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     padding: 16,
-    width: '100%'
+    width: '100%',
+    marginTop: -16
   },
   carouselImage: {
     width: '100%',
-    height: 200, // Altura desejada
-    borderRadius: 10, // Borda arredondada, ajuste conforme necessário
+    height: 200,
+    borderRadius: 10,
   },
   carousel: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#443',
     flexDirection: 'row',
-    marginLeft: 20
+    marginLeft: 60
+  },
+  carouselContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   paginationContainer: {
     position: 'absolute',
-    bottom: 0,
-    paddingVertical: 8,
+    zIndex: 1,
+    top: '70%',
+    left: 0,
+    right: 0,
   },
   paginationDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    marginHorizontal: 8,
-    backgroundColor: '#333', // Cor dos pontos ativos
+    backgroundColor: Colors.primaryColor, // Cor dos pontos ativos
   },
   paginationInactiveDot: {
-    backgroundColor: '#999', // Cor dos pontos inativos
+    backgroundColor: '#333', // Cor dos pontos inativos
   },
   viewDescription: {
     borderColor: Colors.primaryColor,

@@ -104,7 +104,6 @@ const Profile = () => {
   }
 
   const pickImage = async () => {
-    // Permissões necessárias do dispositivo
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -114,10 +113,13 @@ const Profile = () => {
 
     if (!result.canceled && result.assets.length > 0) {
       setSelectedImage(result.assets[0].uri);
+      // Atualiza o estado 'image' diretamente aqui durante a edição
       setImage(result.assets[0].uri);
-      setUserData({...userData, avatarUrl: result.assets[0].uri})
+      setUserData({ ...userData, avatarUrl: result.assets[0].uri });
+      console.log(image)
     }
   };
+
 
   return (
     <Container backgroundColor={'#F8F9FA'}>
@@ -128,92 +130,103 @@ const Profile = () => {
             :
             <>
               <View style={style.card}>
-                {editing ? (
-                  <View style={style.editSection}>
-                    {profile ? (
-                      <TouchableOpacity onPress={pickImage}>
-                        <View style={style.profile}>
-                        <Image source={{uri:image}} style={style.profile} />
-                        </View>
-                      </TouchableOpacity>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                >
+                  <View style={style.main}>
+                    {editing ? (
+                      <View style={style.editSection}>
+                        {profile ? (
+                          <TouchableOpacity onPress={pickImage}>
+                            <View style={style.profile}>
+                              <Image source={{ uri: image }} style={style.profile} />
+                            </View>
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity onPress={pickImage}>
+                            <View style={style.profile}>
+                              {selectedImage ? (
+                                <Image source={{ uri: selectedImage }} style={style.profile} />
+                              ) : (
+                                <Image source={require('../../../assets/noPerfil.png')} style={style.profile} />
+                              )}
+                            </View>
+                          </TouchableOpacity>
+                        )}
+                        <EvilIcons name="pencil" size={22} color={Colors.whiteColor} style={style.iconEdit} />
+                      </View>
                     ) : (
                       <TouchableOpacity onPress={pickImage}>
                         <View style={style.profile}>
-                          {selectedImage ? (
-                            <Image source={{ uri: selectedImage }} style={style.profile} />
+                          {image ? (
+                            <Image source={{ uri: image }} style={style.profile} />
                           ) : (
                             <Image source={require('../../../assets/noPerfil.png')} style={style.profile} />
                           )}
                         </View>
                       </TouchableOpacity>
                     )}
-                    <EvilIcons name="pencil" size={22} color={Colors.whiteColor} style={style.iconEdit} />
-                  </View>
-                ) : (
-                  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    {profile ? (
-                      <Image source={{ uri: image }} style={style.profile} />
-                    ) : (
-                      <Image source={require('../../../assets/noPerfil.png')} style={style.profile} />
-                    )}
-                  </View>
-                )}
-                <ScrollView>
-                  <View style={style.main}>
-                    <View style={style.section}>
-                      <Text style={style.label}>Nome</Text>
-                      {editing ? (
-                        <Input
-                          placeholder='Nome'
-                          value={userData?.nome}
-                          onChange={(text) =>
-                            setUserData({ ...userData, nome: text })}
-                          height={40}
-                        />
-                      ) : (
-                        <Text style={style.textLabel}>{userData?.nome ? userData.nome : 'Sem nome cadastrado'}</Text>
-                      )}
-                    </View>
-                    <View style={style.section}>
-                      <Text style={style.label}>Email</Text>
-                      {editing ? (
-                        <Input
-                          placeholder='Email'
-                          value={userData?.login}
-                          editable={false}
-                          height={40}
-                        />
-                      ) : (
-                        <Text style={style.textLabel}>{userData?.login}</Text>
-                      )}
-                    </View>
-                    <View style={style.section}>
-                      <Text style={style.label}>Telefone</Text>
-                      {editing ? (
-                        <Input
-                          placeholder='Telefone'
-                          value={userData?.telefone}
-                          onChange={(text) => setUserData({ ...userData, telefone: text })}
-                          height={40}
-                        />
-                      ) : (
-                        <Text style={style.textLabel}>{userData?.telefone ? userData.telefone : 'Sem telefone cadastrado'}</Text>
-                      )}
-                    </View>
-                    <View style={style.section}>
-                      <Text style={style.label}>Nome do(s) bichinhos(s)</Text>
-                      {editing ? (
-                        <Input
-                          placeholder='Bichinhos'
-                          value={userData?.pets.join(', ')}
-                          onChange={(text) =>
-                            handlePetsChange(text.split(', '))
-                          }
-                          height={40}
-                        />
-                      ) : (
-                        <Text style={style.textLabel}>{userData?.pets.length ? userData.pets.join(', ') : 'Sem pets cadastrados'}</Text>
-                      )}
+                    <View style={style.mainBasic}>
+                      <View style={style.section}>
+                        <Text style={style.label}>Nome</Text>
+                        {editing ? (
+                          <Input
+                            placeholder='Nome'
+                            value={userData?.nome}
+                            onChange={(text) =>
+                              setUserData({ ...userData, nome: text })}
+                            height={40}
+                          />
+                        ) : (
+                          <Text style={style.textLabel}>{userData?.nome ? userData.nome : 'Sem nome cadastrado'}</Text>
+                        )}
+                      </View>
+                      <View style={style.section}>
+                        <Text style={style.label}>Email</Text>
+                        {editing ? (
+                          <Input
+                            placeholder='Email'
+                            value={userData?.login}
+                            editable={false}
+                            height={40}
+                          />
+                        ) : (
+                          <Text style={style.textLabel}>{userData?.login}</Text>
+                        )}
+                      </View>
+                      <View style={style.section}>
+                        <Text style={style.label}>Telefone</Text>
+                        {editing ? (
+                          <Input
+                            placeholder='Telefone'
+                            value={userData?.telefone}
+                            onChange={(text) => {
+                              const cleanedText = text.replace(/\D/g, '');
+                              // Aplica a máscara (xx) x xxxx-xxxx
+                              const maskedText = cleanedText.replace(/^(\d{2})(\d{1})(\d{4})(\d{4})$/, '($1) $2 $3-$4');
+                              setUserData({ ...userData, telefone: maskedText })
+                            }}
+                            height={40}
+                          />
+                        ) : (
+                          <Text style={style.textLabel}>{userData?.telefone ? userData.telefone : 'Sem telefone cadastrado'}</Text>
+                        )}
+                      </View>
+                      <View style={style.section}>
+                        <Text style={style.label}>Nome do(s) bichinhos(s)</Text>
+                        {editing ? (
+                          <Input
+                            placeholder='Bichinhos'
+                            value={userData?.pets.join(', ')}
+                            onChange={(text) =>
+                              handlePetsChange(text.split(', '))
+                            }
+                            height={40}
+                          />
+                        ) : (
+                          <Text style={style.textLabel}>{userData?.pets.length ? userData.pets.join(', ') : 'Sem pets cadastrados'}</Text>
+                        )}
+                      </View>
                     </View>
                   </View>
                 </ScrollView>

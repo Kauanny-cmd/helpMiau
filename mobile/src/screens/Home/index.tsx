@@ -1,7 +1,7 @@
-import {ScrollView, Image, Text, View } from "react-native";
+import { ScrollView, Image, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import {TouchableOpacity, FlatList } from "react-native-gesture-handler";
+import { TouchableOpacity, FlatList } from "react-native-gesture-handler";
 import { Ionicons } from '@expo/vector-icons';
 
 import { StackTypes } from "src/routes/authNavitagor";
@@ -80,13 +80,14 @@ const Home = () => {
   });
 
   return (
-    <Container>
+    <Container backgroundColor={Colors.backgroundColor}>
       <ScrollView
         horizontal={false}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ alignItems: 'center' }}
       >
         <Text style={style.textPar}>Veja a lista de bichinhos desaparecidos e busque pelo nome</Text>
-        <View style={style.subTop}>
+        <View style={{ ...style.subTop }}>
           <View style={{ width: '86%' }}>
             <Input placeholder="Pesquisar"
               onChange={(value) => handleSearch(value)}
@@ -101,12 +102,8 @@ const Home = () => {
         </View>
         <View>
           {loading ? (
-            <View style={{
-              height: '82%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-              <Image source={require("../../../assets/dogWalking.gif")} style={{ width: 130, height: 130, marginTop: 30 }} />
+            <View style={style.viewGif}>
+              <Image source={require("../../../assets/dogWalking.gif")} style={style.gif} />
             </View>
           ) : (
             <FlatList
@@ -118,7 +115,7 @@ const Home = () => {
                 </TouchableOpacity>
               )}
               numColumns={2}
-             scrollEnabled={false}
+              scrollEnabled={false}
             />
           )}
         </View>

@@ -39,6 +39,9 @@
           "locationAlwaysAndWhenInUsePermission": "O aplicativo precisa acessar sua localização."
         }
       ]
-    ]
+    ],
+    "devtool": {
+      "logLevel": "warn"
+    }
   }
 }

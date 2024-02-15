@@ -17,14 +17,18 @@ const style = StyleSheet.create({
     justifyContent: 'center'
   },
   profile: {
-    width: 90,
-    height: 90,
+    width: 100,
+    height: 100,
     borderRadius: 100
   },
   main: {
     gap: 14,
-    height: '70%',
-    padding: 16
+    alignItems: 'center',
+  },
+  mainBasic:{
+    width: '100%',
+    gap:14,
+    marginTop:14
   },
   section: {
     gap: 4
@@ -36,7 +40,7 @@ const style = StyleSheet.create({
   },
   iconEdit: {
     position: 'absolute',
-    left: '56%',
+    left: '22%',
     top: '6%',
     backgroundColor: Colors.primaryColor,
     borderRadius: 50, // A metade do tamanho desejado
@@ -69,13 +73,12 @@ const style = StyleSheet.create({
   card:{
     height:'80%',
     width: '94%',
-    borderWidth:1,
     padding:12,
     justifyContent: 'space-between',
     flexDirection:'column',
     alignContent: 'center',
     borderRadius:10,
-    borderColor:Colors.grayTextColor4,
+    marginTop:-30,
   },
   imagePicker: {
     width: 200,
